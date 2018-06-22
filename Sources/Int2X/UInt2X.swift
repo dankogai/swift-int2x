@@ -5,10 +5,16 @@ public struct UInt2X<Word:UInt1X>: Hashable, Codable {
     public typealias Magnitude = UInt2X
     public typealias Words = [Word.Words.Element]
     public typealias Stride = Int
-    public var (hi, lo):(Word, Word)
+    public var hi:Word = 0
+    public var lo:Word = 0
     public init(hi:Word, lo:Word) { (self.hi, self.lo) = (hi, lo) }
     public init(_ source:UInt2X){ (hi, lo) = (source.hi, source.lo) }
-    public init() { (hi, lo) = (0, 0) }
+}
+// address auto equatability bug of Swift 4.1 :-(
+extension UInt2X {
+    public static func ==(_ lhs:UInt2X, _ rhs:UInt2X)->Bool {
+        return lhs.hi == rhs.hi && lhs.lo == rhs.lo
+    }
 }
 // initializers & Constants
 extension UInt2X : ExpressibleByIntegerLiteral {
@@ -31,11 +37,18 @@ extension UInt2X : ExpressibleByIntegerLiteral {
         self.init(UInt(source))
     }
     public init<T:BinaryInteger>(truncatingIfNeeded source: T) {
-        self.hi = Word(source >> Word.bitWidth)
-        self.lo = Word(source  & T(clamping:Word.max))
+        if let s = source as? Int {
+            self.hi = Word(s.magnitude >> Word.bitWidth)
+            self.lo = Word(s.magnitude)  & Word.max
+        } else {
+            self.hi = Word(source >> Word.bitWidth)
+            self.lo = Word(source & T(clamping:Word.max))
+        }
     }
     public init<T:BinaryInteger>(clamping source: T) {
-        fatalError("TODO")
+        self.hi = Word(source >> Word.bitWidth)
+        self.lo = Word(source  & T(clamping:Word.max))
+        // fatalError("TODO")
     }
     public init(integerLiteral value: UInt) {
         self.init(value)

@@ -4,7 +4,7 @@ import Int2X
 
 typealias U16 = UInt2X<UInt8>
 
-var u16 = U16(0)
+var u16 = U16()
 u16 == u16
 u16.hashValue
 
@@ -29,18 +29,14 @@ func fact<T:FixedWidthInteger>(_ n:T)->T {
 }
 
 typealias U128 = UInt2X<UInt64>
+
 var u128 = fact(U128(34))
 u128 / fact(U128(32))
+u128 = U128(hi:UInt64.max, lo:UInt64.max)
 
-//
-//typealias U128 = UInt2X<UInt64>
-//var foo =  U128()
-//foo = 0xffffff
-//u128 - foo
-//u128.quotientAndRemainder(dividingBy: U128(UInt64.max) * foo).remainder
-//
-//fact(U128(UInt(34))).description
-//
-//// typealias U256 = UInt2X<U128>
-//
+typealias U256 = UInt2X<U128>
+
+var u256 = fact(U256(57)).description
+
+
 ////: [Next](@next)
