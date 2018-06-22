@@ -9,11 +9,11 @@
 /* Begin PBXAggregateTarget section */
 		"Int2X::Int2XPackageTests::ProductTarget" /* Int2XPackageTests */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = OBJ_36 /* Build configuration list for PBXAggregateTarget "Int2XPackageTests" */;
+			buildConfigurationList = OBJ_39 /* Build configuration list for PBXAggregateTarget "Int2XPackageTests" */;
 			buildPhases = (
 			);
 			dependencies = (
-				OBJ_39 /* PBXTargetDependency */,
+				OBJ_42 /* PBXTargetDependency */,
 			);
 			name = Int2XPackageTests;
 			productName = Int2XPackageTests;
@@ -21,24 +21,33 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		OBJ_26 /* Int2X.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Int2X.swift */; };
-		OBJ_27 /* UInt2X.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* UInt2X.swift */; };
-		OBJ_34 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
-		OBJ_45 /* Int2XTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* Int2XTests.swift */; };
-		OBJ_46 /* UInt2XTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* UInt2XTests.swift */; };
-		OBJ_47 /* XCTestManifests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* XCTestManifests.swift */; };
-		OBJ_49 /* Int2X.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Int2X::Int2X::Product" /* Int2X.framework */; };
+		OBJ_29 /* Int2X.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* Int2X.swift */; };
+		OBJ_30 /* UInt2X.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* UInt2X.swift */; };
+		OBJ_37 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
+		OBJ_49 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* main.swift */; };
+		OBJ_51 /* Int2X.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Int2X::Int2X::Product" /* Int2X.framework */; };
+		OBJ_57 /* Int2XTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* Int2XTests.swift */; };
+		OBJ_58 /* UInt2XTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* UInt2XTests.swift */; };
+		OBJ_59 /* XCTestManifests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* XCTestManifests.swift */; };
+		OBJ_61 /* Int2X.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Int2X::Int2X::Product" /* Int2X.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		9E1DB36620DA931500A19CE8 /* PBXContainerItemProxy */ = {
+		9EB8F9C620DD3BB200A19CE8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = "Int2X::Int2X";
 			remoteInfo = Int2X;
 		};
-		9E1DB36720DA931600A19CE8 /* PBXContainerItemProxy */ = {
+		9EB8F9C720DD3BB200A19CE8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = "Int2X::Int2X";
+			remoteInfo = Int2X;
+		};
+		9EB8F9C820DD3BB200A19CE8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
@@ -49,58 +58,79 @@
 
 /* Begin PBXFileReference section */
 		"Int2X::Int2X::Product" /* Int2X.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Int2X.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"Int2X::Int2XRun::Product" /* Int2XRun */ = {isa = PBXFileReference; lastKnownFileType = text; path = Int2XRun; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Int2X::Int2XTests::Product" /* Int2XTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = Int2XTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		OBJ_10 /* UInt2X.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt2X.swift; sourceTree = "<group>"; };
-		OBJ_13 /* Int2XTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int2XTests.swift; sourceTree = "<group>"; };
-		OBJ_14 /* UInt2XTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt2XTests.swift; sourceTree = "<group>"; };
-		OBJ_15 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
-		OBJ_16 /* Int2X.xcworkspace */ = {isa = PBXFileReference; lastKnownFileType = wrapper.workspace; path = Int2X.xcworkspace; sourceTree = SOURCE_ROOT; };
-		OBJ_17 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = scripts; sourceTree = SOURCE_ROOT; };
+		OBJ_11 /* Int2X.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int2X.swift; sourceTree = "<group>"; };
+		OBJ_12 /* UInt2X.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt2X.swift; sourceTree = "<group>"; };
+		OBJ_15 /* Int2XTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int2XTests.swift; sourceTree = "<group>"; };
+		OBJ_16 /* UInt2XTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt2XTests.swift; sourceTree = "<group>"; };
+		OBJ_17 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
+		OBJ_18 /* Int2X.xcworkspace */ = {isa = PBXFileReference; lastKnownFileType = wrapper.workspace; path = Int2X.xcworkspace; sourceTree = SOURCE_ROOT; };
+		OBJ_19 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = scripts; sourceTree = SOURCE_ROOT; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		OBJ_9 /* Int2X.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int2X.swift; sourceTree = "<group>"; };
+		OBJ_9 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		OBJ_28 /* Frameworks */ = {
+		OBJ_31 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_48 /* Frameworks */ = {
+		OBJ_50 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_49 /* Int2X.framework in Frameworks */,
+				OBJ_51 /* Int2X.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_60 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_61 /* Int2X.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		OBJ_11 /* Tests */ = {
+		OBJ_10 /* Int2X */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_12 /* Int2XTests */,
+				OBJ_11 /* Int2X.swift */,
+				OBJ_12 /* UInt2X.swift */,
+			);
+			name = Int2X;
+			path = Sources/Int2X;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_13 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_14 /* Int2XTests */,
 			);
 			name = Tests;
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_12 /* Int2XTests */ = {
+		OBJ_14 /* Int2XTests */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_13 /* Int2XTests.swift */,
-				OBJ_14 /* UInt2XTests.swift */,
-				OBJ_15 /* XCTestManifests.swift */,
+				OBJ_15 /* Int2XTests.swift */,
+				OBJ_16 /* UInt2XTests.swift */,
+				OBJ_17 /* XCTestManifests.swift */,
 			);
 			name = Int2XTests;
 			path = Tests/Int2XTests;
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_18 /* Products */ = {
+		OBJ_20 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				"Int2X::Int2XRun::Product" /* Int2XRun */,
 				"Int2X::Int2XTests::Product" /* Int2XTests.xctest */,
 				"Int2X::Int2X::Product" /* Int2X.framework */,
 			);
@@ -112,10 +142,10 @@
 			children = (
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
-				OBJ_11 /* Tests */,
-				OBJ_16 /* Int2X.xcworkspace */,
-				OBJ_17 /* scripts */,
-				OBJ_18 /* Products */,
+				OBJ_13 /* Tests */,
+				OBJ_18 /* Int2X.xcworkspace */,
+				OBJ_19 /* scripts */,
+				OBJ_20 /* Products */,
 			);
 			name = "";
 			sourceTree = "<group>";
@@ -123,19 +153,19 @@
 		OBJ_7 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_8 /* Int2X */,
+				OBJ_8 /* Int2XRun */,
+				OBJ_10 /* Int2X */,
 			);
 			name = Sources;
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_8 /* Int2X */ = {
+		OBJ_8 /* Int2XRun */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_9 /* Int2X.swift */,
-				OBJ_10 /* UInt2X.swift */,
+				OBJ_9 /* main.swift */,
 			);
-			name = Int2X;
-			path = Sources/Int2X;
+			name = Int2XRun;
+			path = Sources/Int2XRun;
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
@@ -143,10 +173,10 @@
 /* Begin PBXNativeTarget section */
 		"Int2X::Int2X" /* Int2X */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_22 /* Build configuration list for PBXNativeTarget "Int2X" */;
+			buildConfigurationList = OBJ_25 /* Build configuration list for PBXNativeTarget "Int2X" */;
 			buildPhases = (
-				OBJ_25 /* Sources */,
-				OBJ_28 /* Frameworks */,
+				OBJ_28 /* Sources */,
+				OBJ_31 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -157,17 +187,34 @@
 			productReference = "Int2X::Int2X::Product" /* Int2X.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		"Int2X::Int2XTests" /* Int2XTests */ = {
+		"Int2X::Int2XRun" /* Int2XRun */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_41 /* Build configuration list for PBXNativeTarget "Int2XTests" */;
+			buildConfigurationList = OBJ_45 /* Build configuration list for PBXNativeTarget "Int2XRun" */;
 			buildPhases = (
-				OBJ_44 /* Sources */,
-				OBJ_48 /* Frameworks */,
+				OBJ_48 /* Sources */,
+				OBJ_50 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				OBJ_50 /* PBXTargetDependency */,
+				OBJ_52 /* PBXTargetDependency */,
+			);
+			name = Int2XRun;
+			productName = Int2XRun;
+			productReference = "Int2X::Int2XRun::Product" /* Int2XRun */;
+			productType = "com.apple.product-type.tool";
+		};
+		"Int2X::Int2XTests" /* Int2XTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OBJ_53 /* Build configuration list for PBXNativeTarget "Int2XTests" */;
+			buildPhases = (
+				OBJ_56 /* Sources */,
+				OBJ_60 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				OBJ_62 /* PBXTargetDependency */,
 			);
 			name = Int2XTests;
 			productName = Int2XTests;
@@ -176,9 +223,9 @@
 		};
 		"Int2X::SwiftPMPackageDescription" /* Int2XPackageDescription */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_30 /* Build configuration list for PBXNativeTarget "Int2XPackageDescription" */;
+			buildConfigurationList = OBJ_33 /* Build configuration list for PBXNativeTarget "Int2XPackageDescription" */;
 			buildPhases = (
-				OBJ_33 /* Sources */,
+				OBJ_36 /* Sources */,
 			);
 			buildRules = (
 			);
@@ -204,63 +251,77 @@
 				en,
 			);
 			mainGroup = OBJ_5 /*  */;
-			productRefGroup = OBJ_18 /* Products */;
+			productRefGroup = OBJ_20 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				"Int2X::Int2X" /* Int2X */,
 				"Int2X::SwiftPMPackageDescription" /* Int2XPackageDescription */,
 				"Int2X::Int2XPackageTests::ProductTarget" /* Int2XPackageTests */,
+				"Int2X::Int2XRun" /* Int2XRun */,
 				"Int2X::Int2XTests" /* Int2XTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		OBJ_25 /* Sources */ = {
+		OBJ_28 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_26 /* Int2X.swift in Sources */,
-				OBJ_27 /* UInt2X.swift in Sources */,
+				OBJ_29 /* Int2X.swift in Sources */,
+				OBJ_30 /* UInt2X.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_33 /* Sources */ = {
+		OBJ_36 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_34 /* Package.swift in Sources */,
+				OBJ_37 /* Package.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_44 /* Sources */ = {
+		OBJ_48 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_45 /* Int2XTests.swift in Sources */,
-				OBJ_46 /* UInt2XTests.swift in Sources */,
-				OBJ_47 /* XCTestManifests.swift in Sources */,
+				OBJ_49 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_56 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_57 /* Int2XTests.swift in Sources */,
+				OBJ_58 /* UInt2XTests.swift in Sources */,
+				OBJ_59 /* XCTestManifests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		OBJ_39 /* PBXTargetDependency */ = {
+		OBJ_42 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "Int2X::Int2XTests" /* Int2XTests */;
-			targetProxy = 9E1DB36720DA931600A19CE8 /* PBXContainerItemProxy */;
+			targetProxy = 9EB8F9C820DD3BB200A19CE8 /* PBXContainerItemProxy */;
 		};
-		OBJ_50 /* PBXTargetDependency */ = {
+		OBJ_52 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "Int2X::Int2X" /* Int2X */;
-			targetProxy = 9E1DB36620DA931500A19CE8 /* PBXContainerItemProxy */;
+			targetProxy = 9EB8F9C620DD3BB200A19CE8 /* PBXContainerItemProxy */;
+		};
+		OBJ_62 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "Int2X::Int2X" /* Int2X */;
+			targetProxy = 9EB8F9C720DD3BB200A19CE8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		OBJ_23 /* Debug */ = {
+		OBJ_26 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_TESTABILITY = YES;
@@ -283,7 +344,7 @@
 			};
 			name = Debug;
 		};
-		OBJ_24 /* Release */ = {
+		OBJ_27 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_TESTABILITY = YES;
@@ -328,7 +389,7 @@
 			};
 			name = Debug;
 		};
-		OBJ_31 /* Debug */ = {
+		OBJ_34 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				LD = /usr/bin/true;
@@ -337,24 +398,12 @@
 			};
 			name = Debug;
 		};
-		OBJ_32 /* Release */ = {
+		OBJ_35 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				LD = /usr/bin/true;
 				OTHER_SWIFT_FLAGS = "-swift-version 4 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk";
 				SWIFT_VERSION = 4.0;
-			};
-			name = Release;
-		};
-		OBJ_37 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Debug;
-		};
-		OBJ_38 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
 			};
 			name = Release;
 		};
@@ -378,7 +427,59 @@
 			};
 			name = Release;
 		};
-		OBJ_42 /* Debug */ = {
+		OBJ_40 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		OBJ_41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		OBJ_46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Int2X.xcodeproj/Int2XRun_Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
+				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
+				SWIFT_VERSION = 4.0;
+				TARGET_NAME = Int2XRun;
+			};
+			name = Debug;
+		};
+		OBJ_47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Int2X.xcodeproj/Int2XRun_Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
+				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
+				SWIFT_VERSION = 4.0;
+				TARGET_NAME = Int2XRun;
+			};
+			name = Release;
+		};
+		OBJ_54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
@@ -397,7 +498,7 @@
 			};
 			name = Debug;
 		};
-		OBJ_43 /* Release */ = {
+		OBJ_55 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
@@ -428,38 +529,47 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_22 /* Build configuration list for PBXNativeTarget "Int2X" */ = {
+		OBJ_25 /* Build configuration list for PBXNativeTarget "Int2X" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_23 /* Debug */,
-				OBJ_24 /* Release */,
+				OBJ_26 /* Debug */,
+				OBJ_27 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_30 /* Build configuration list for PBXNativeTarget "Int2XPackageDescription" */ = {
+		OBJ_33 /* Build configuration list for PBXNativeTarget "Int2XPackageDescription" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_31 /* Debug */,
-				OBJ_32 /* Release */,
+				OBJ_34 /* Debug */,
+				OBJ_35 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_36 /* Build configuration list for PBXAggregateTarget "Int2XPackageTests" */ = {
+		OBJ_39 /* Build configuration list for PBXAggregateTarget "Int2XPackageTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_37 /* Debug */,
-				OBJ_38 /* Release */,
+				OBJ_40 /* Debug */,
+				OBJ_41 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_41 /* Build configuration list for PBXNativeTarget "Int2XTests" */ = {
+		OBJ_45 /* Build configuration list for PBXNativeTarget "Int2XRun" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_42 /* Debug */,
-				OBJ_43 /* Release */,
+				OBJ_46 /* Debug */,
+				OBJ_47 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_53 /* Build configuration list for PBXNativeTarget "Int2XTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_54 /* Debug */,
+				OBJ_55 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

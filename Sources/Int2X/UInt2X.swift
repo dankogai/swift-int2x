@@ -3,7 +3,8 @@ public typealias UInt1X = FixedWidthInteger & BinaryInteger & UnsignedInteger & 
 public struct UInt2X<Word:UInt1X>: Hashable, Codable {
     public typealias IntegerLiteralType = UInt
     public typealias Magnitude = UInt2X
-    public typealias Stride = UInt2X
+    public typealias Words = [Word.Words.Element]
+    public typealias Stride = Int
     public var (hi, lo):(Word, Word)
     public init(hi:Word, lo:Word) { (self.hi, self.lo) = (hi, lo) }
     public init(_ source:UInt2X){ (hi, lo) = (source.hi, source.lo) }
@@ -11,21 +12,34 @@ public struct UInt2X<Word:UInt1X>: Hashable, Codable {
 }
 // initializers & Constants
 extension UInt2X : ExpressibleByIntegerLiteral {
-    public init<T>(exactly source: T) where T : BinaryInteger {
-        let h = source >> Word.bitWidth
-        let l = source == 0 ? 0 : source  & T(Word.max)
-        self.init(hi:Word(h), lo:Word(l))
+    public static var isSigned: Bool { return false }
+    public static var min:UInt2X { return UInt2X(hi:Word.min, lo:Word.min) }
+    public static var max:UInt2X { return UInt2X(hi:Word.max, lo:Word.max) }
+    public init?<T>(exactly source: T) where T : BinaryInteger {
+        guard source.bitWidth <= Word.bitWidth * 2 else { return nil }
+        self.hi = Word(source >> Word.bitWidth)
+        self.lo = Word(source == 0 ? 0 : source & T(clamping:Word.max))
     }
     public init<T>(_ source: T) where T : BinaryInteger  {
-        let h = source == 0 ? 0 : source >> Word.bitWidth
-        let l = source == 0 ? 0 : source  & T(Word.max)
-        self.init(hi:Word(h), lo:Word(l))
+        self.hi = Word(source >> Word.bitWidth)
+        self.lo = Word(source == 0 ? 0 : source & T(clamping:Word.max))
+    }
+    public init?<T>(exactly source: T) where T : BinaryFloatingPoint {
+        return nil
+    }
+    public init<T>(_ source: T) where T : BinaryFloatingPoint {
+        self.init(UInt(source))
+    }
+    public init<T:BinaryInteger>(truncatingIfNeeded source: T) {
+        self.hi = Word(source >> Word.bitWidth)
+        self.lo = Word(source  & T(clamping:Word.max))
+    }
+    public init<T:BinaryInteger>(clamping source: T) {
+        fatalError("TODO")
     }
     public init(integerLiteral value: UInt) {
         self.init(value)
     }
-    public static var min:UInt2X { return UInt2X(hi:Word.min, lo:Word.min) }
-    public static var max:UInt2X { return UInt2X(hi:Word.max, lo:Word.max) }
 }
 // Comparable
 extension UInt2X : Comparable {
@@ -158,10 +172,10 @@ extension UInt2X : Numeric {
         lhs = lhs * rhs
     }
 }
-// division, which is rather tough
+// bitshifts
 extension UInt2X {
-    public func rightShifted(_ width:Int)->UInt2X {
-        precondition(0 <= width)
+    public func rShifted(_ width:Int)->UInt2X {
+        if width <  0 { return self.lShifted(-width) }
         if width == 0 { return self }
         if width == Word.bitWidth     { return UInt2X(hi:0, lo:self.hi) }
         if Word.bitWidth < width {
@@ -173,6 +187,34 @@ extension UInt2X {
             return UInt2X(hi: self.hi >> width, lo: carry | self.lo >> width)
         }
     }
+    public func lShifted(_ width:Int)->UInt2X {
+        if width <  0 { return self.rShifted(-width) }
+        if width == 0 { return self }
+        if width == Word.bitWidth     { return UInt2X(hi:self.lo, lo:0) }
+        if Word.bitWidth < width {
+            return UInt2X(hi:self.lo << (width - Word.bitWidth), lo:0)
+        }
+        else {
+            let carry = self.lo >> (Word.bitWidth - width)
+            return UInt2X(hi: self.hi << width | carry, lo: self.lo << width)
+        }
+    }
+    public static func &>>(_ lhs:UInt2X, _ rhs:UInt2X)->UInt2X {
+        return lhs.rShifted(Int(rhs.lo))
+    }
+    public static func &>>=(_ lhs:inout UInt2X, _ rhs:UInt2X) {
+        return lhs = lhs &>> rhs
+    }
+    public static func &<<(_ lhs:UInt2X, _ rhs:UInt2X)->UInt2X {
+        return lhs.lShifted(Int(rhs.lo))
+    }
+    public static func &<<=(_ lhs:inout UInt2X, _ rhs:UInt2X) {
+        return lhs = lhs &<< rhs
+    }
+
+}
+// division, which is rather tough
+extension UInt2X {
     public func quotientAndRemainder(dividingBy other: Word) -> (quotient: UInt2X, remainder: UInt2X) {
         precondition(other != 0, "division by zero!")
         let (qh, rh) = self.hi.quotientAndRemainder(dividingBy: other)
@@ -195,8 +237,8 @@ extension UInt2X {
         }
         #endif
         let offset = Word.bitWidth - other.hi.leadingZeroBitCount
-        var q = self.rightShifted(offset)
-            .quotientAndRemainder(dividingBy: other.rightShifted(offset).lo).quotient
+        var q = self.rShifted(offset)
+            .quotientAndRemainder(dividingBy: other.rShifted(offset).lo).quotient
         var r = self - other * q
         // print("\(#line):(q, r) = (\(q), \(r))")
         while other < r {
@@ -216,6 +258,12 @@ extension UInt2X {
     }
     public static func %= (_ lhs:inout UInt2X, rhs:UInt2X) {
         lhs = lhs % rhs
+    }
+    public func dividedReportingOverflow(by other :UInt2X) -> (partialValue: UInt2X, overflow:Bool) {
+        return (self / other, false)
+    }
+    public func remainderReportingOverflow(dividingBy other :UInt2X) -> (partialValue: UInt2X, overflow:Bool) {
+        return (self % other, false)
     }
     public func dividingFullWidth(_ dividend: (high: UInt2X, low: Magnitude)) -> (quotient: UInt2X, remainder: UInt2X) {
         precondition(self != 0, "division by zero!")
@@ -246,23 +294,23 @@ extension UInt2X {
         (q0, r) = qr3(dividend:(dh.hi, dh.lo, dl.hi), divider:self)
         (q1, r) = qr3(dividend:( r.hi,  r.lo, dl.lo), divider:self)
         return (UInt2X(hi:q0.lo, lo:q1.lo), r)
-     }
+    }
 }
+// stringification
 extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
     public func toString(radix: Int = 10, uppercase: Bool = false) -> String {
         precondition((2...36) ~= radix, "radix must be within the range of 2-36.")
         if self == 0 { return "0" }
-        var result = ""
+        var result = [Character]()
         var qr = (quotient: self, remainder: UInt2X(0))
         let digits = uppercase
-            ? "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            : "0123456789abcdefghijklmnopqrstuvwxyz"
+            ? Array("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            : Array("0123456789abcdefghijklmnopqrstuvwxyz")
         repeat {
             qr = qr.quotient.quotientAndRemainder(dividingBy: Word(radix))
-            let index = digits.index(digits.startIndex, offsetBy: Int(qr.remainder.lo))
-            result.insert(digits[index], at: result.startIndex)
-        } while qr.quotient > 0
-        return result
+            result.append(digits[Int(qr.remainder.lo)])
+        } while qr.quotient != 0
+        return String(result.reversed())
     }
     public var description:String {
         return toString()
@@ -271,3 +319,60 @@ extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
         return "0x" + toString(radix: 16)
     }
 }
+// Strideable
+extension UInt2X: Strideable {
+    public var asInt:Int {
+        return Int(bitPattern:UInt(self.hi << Word.bitWidth + self.lo))
+    }
+    public func distance(to other: UInt2X) -> Int {
+        return other.asInt - self.asInt
+    }
+    public func advanced(by n: Int) -> UInt2X {
+        return self + UInt2X(n)
+    }
+}
+extension UInt2X: BinaryInteger {
+    public var bitWidth: Int {
+        return Word.bitWidth * 2
+    }
+    public var words: Words {
+        return Array(self.lo.words) + Array(self.hi.words)
+    }
+    public var trailingZeroBitCount: Int {
+        return self.hi == 0 ? self.lo.trailingZeroBitCount : self.hi.trailingZeroBitCount + Word.bitWidth
+    }
+    public static func &= (lhs: inout UInt2X, rhs: UInt2X) {
+        lhs = UInt2X(hi:lhs.hi & rhs.hi, lo:lhs.lo & rhs.lo)
+    }
+    public static func |= (lhs: inout UInt2X, rhs: UInt2X) {
+        lhs = UInt2X(hi:lhs.hi | rhs.hi, lo:lhs.lo | rhs.lo)
+    }
+    public static func ^= (lhs: inout UInt2X<Word>, rhs: UInt2X<Word>) {
+        lhs = UInt2X(hi:lhs.hi ^ rhs.hi, lo:lhs.lo ^ rhs.lo)
+    }
+    public static func <<= <RHS>(lhs: inout UInt2X<Word>, rhs: RHS) where RHS : BinaryInteger {
+        lhs = lhs.lShifted(Int(rhs))
+    }
+    public static func >>= <RHS>(lhs: inout UInt2X, rhs: RHS) where RHS : BinaryInteger {
+        lhs = lhs.rShifted(Int(rhs))
+    }
+}
+extension UInt2X: FixedWidthInteger {
+    public init(_truncatingBits bits: UInt) {
+        fatalError()
+    }
+    public var nonzeroBitCount: Int {
+        return self.hi.nonzeroBitCount + self.lo.nonzeroBitCount
+    }
+    public var leadingZeroBitCount: Int {
+        return self.hi == 0 ? self.lo.leadingZeroBitCount + Word.bitWidth : self.hi.leadingZeroBitCount
+    }
+    public var byteSwapped: UInt2X {
+        return UInt2X(hi:self.lo.byteSwapped, lo:self.hi.byteSwapped)
+    }
+    public static var bitWidth: Int {
+        return Word.bitWidth * 2
+    }
+}
+extension UInt2X: UnsignedInteger {}
+

@@ -22,6 +22,9 @@ let package = Package(
         .target(
             name: "Int2X",
             dependencies: []),
+        .target(
+            name: "Int2XRun",
+            dependencies: ["Int2X"]),
         .testTarget(
             name: "Int2XTests",
             dependencies: ["Int2X"]),
