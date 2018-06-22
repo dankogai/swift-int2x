@@ -22,13 +22,18 @@ extension UInt2X : ExpressibleByIntegerLiteral {
     public static var min:UInt2X { return UInt2X(hi:Word.min, lo:Word.min) }
     public static var max:UInt2X { return UInt2X(hi:Word.max, lo:Word.max) }
     public init?<T>(exactly source: T) where T : BinaryInteger {
-        guard source.bitWidth <= Word.bitWidth * 2 else { return nil }
+        guard Word.bitWidth * 2 <= source.bitWidth else { return nil }
         self.hi = Word(source >> Word.bitWidth)
         self.lo = Word(source == 0 ? 0 : source & T(clamping:Word.max))
     }
     public init<T>(_ source: T) where T : BinaryInteger  {
-        self.hi = Word(source >> Word.bitWidth)
-        self.lo = Word(source == 0 ? 0 : source & T(clamping:Word.max))
+        if source is Int {
+            self.hi = Word(source.magnitude >> Word.bitWidth)
+            self.lo = Word(clamping:source.magnitude)
+        } else {
+            self.hi = Word(source >> Word.bitWidth)
+            self.lo = Word(source & T(clamping:Word.max))
+        }
     }
     public init?<T>(exactly source: T) where T : BinaryFloatingPoint {
         return nil
@@ -37,18 +42,22 @@ extension UInt2X : ExpressibleByIntegerLiteral {
         self.init(UInt(source))
     }
     public init<T:BinaryInteger>(truncatingIfNeeded source: T) {
-        if let s = source as? Int {
-            self.hi = Word(s.magnitude >> Word.bitWidth)
-            self.lo = Word(s.magnitude)  & Word.max
+        if source is Int {
+            self.hi = Word(source.magnitude >> Word.bitWidth)
+            self.lo = Word(clamping:source.magnitude)
         } else {
             self.hi = Word(source >> Word.bitWidth)
             self.lo = Word(source & T(clamping:Word.max))
         }
     }
     public init<T:BinaryInteger>(clamping source: T) {
-        self.hi = Word(source >> Word.bitWidth)
-        self.lo = Word(source  & T(clamping:Word.max))
-        // fatalError("TODO")
+        if source is Int {
+            self.hi = Word(source.magnitude >> Word.bitWidth)
+            self.lo = Word(clamping:source.magnitude)
+        } else {
+            self.hi = Word(source >> Word.bitWidth)
+            self.lo = Word(source & T(clamping:Word.max))
+        }
     }
     public init(integerLiteral value: UInt) {
         self.init(value)

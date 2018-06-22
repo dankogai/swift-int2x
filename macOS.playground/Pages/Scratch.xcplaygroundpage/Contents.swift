@@ -29,14 +29,13 @@ func fact<T:FixedWidthInteger>(_ n:T)->T {
 }
 
 typealias U128 = UInt2X<UInt64>
-
 var u128 = fact(U128(34))
-u128 / fact(U128(32))
-u128 = U128(hi:UInt64.max, lo:UInt64.max)
 
 typealias U256 = UInt2X<U128>
-
 var u256 = fact(U256(57)).description
 
+typealias U512 = UInt2X<U256>
+
+var u512 = fact(U512(57)).description
 
 ////: [Next](@next)
