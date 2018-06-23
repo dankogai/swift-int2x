@@ -4,9 +4,6 @@ import Int2X
 
 typealias I16 = Int2X<UInt8>
 
-//dump(I16(-1))
-//dump(I16.max)
-//dump(I16.min)
 I16(-1).rawValue.hi.leadingZeroBitCount == 0
 I16(-1).isNegative
 I16(+1).isNegative

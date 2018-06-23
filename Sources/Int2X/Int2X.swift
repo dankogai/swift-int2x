@@ -10,11 +10,6 @@ public struct Int2X<Word:UInt1X>: Hashable, Codable {
     public init(_ source:Int2X) { self.rawValue = source.rawValue }
     public init() {}
 }
-//extension Int2X {
-//    public static func ==(_ lhs:Int2X, _ rhs:Int2X)->Bool {
-//        return lhs.rawValue == lhs.rawValue
-//    }
-//}
 extension Int2X : ExpressibleByIntegerLiteral {
     public static var isSigned: Bool { return true }
     public static var bitWidth: Int { return Magnitude.bitWidth }
