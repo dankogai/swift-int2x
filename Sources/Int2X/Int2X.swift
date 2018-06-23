@@ -181,7 +181,7 @@ extension Int2X {
 }
 // UInt2X -> String
 extension Int2X : CustomStringConvertible, CustomDebugStringConvertible {
-    public func toString(radix: Int = 10, uppercase: Bool = false) -> String {
+    public func toString(radix:Int=10, uppercase:Bool=false) -> String {
         return (self.isNegative ? "-" : "") + self.magnitude.toString(radix:radix, uppercase:uppercase)
     }
     public var description:String {
@@ -189,6 +189,11 @@ extension Int2X : CustomStringConvertible, CustomDebugStringConvertible {
     }
     public var debugDescription:String {
         return (self.isNegative ? "-" : "+") + "0x" + self.magnitude.toString(radix:16)
+    }
+}
+extension StringProtocol {
+    public init?<Word>(_ source:Int2X<Word>, radix:Int=10, uppercase:Bool=false) {
+        self.init(source.toString(radix:radix, uppercase:uppercase))
     }
 }
 // String <- UInt2X
@@ -210,14 +215,17 @@ extension Int2X : ExpressibleByStringLiteral {
         return sign == "-" ? -Int2X(rawValue: magnitude) : +Int2X(rawValue: magnitude)
     }
 }
+// Int -> Int2X
+extension Int {
+    public init<Word>(_ source:Int2X<Word>) {
+        let a = Int(bitPattern: UInt(source.magnitude))
+        self.init(source.isNegative ? -a : +a)
+    }
+}
 // Strideable
 extension Int2X: Strideable {
-    public var asInt:Int {
-        let a = Int(bitPattern: UInt(self.magnitude))
-        return self.isNegative ? -a : +a
-    }
     public func distance(to other: Int2X) -> Int {
-        return other.asInt - self.asInt
+        return Int(other) - Int(self)
     }
     public func advanced(by n: Int) -> Int2X {
         return self + Int2X(n)

@@ -22,8 +22,6 @@ I16(+42).quotientAndRemainder(dividingBy: I16(+5)).remainder
 I16(-42).quotientAndRemainder(dividingBy: I16(+5)).remainder
 I16(+42).quotientAndRemainder(dividingBy: I16(-5)).remainder
 I16(-42).quotientAndRemainder(dividingBy: I16(-5)).remainder
-I16(+42).asInt
-I16(-42).asInt
 (I16(0)..<I16(8))[4]
 
 func fact<T:FixedWidthInteger>(_ n:T)->T {

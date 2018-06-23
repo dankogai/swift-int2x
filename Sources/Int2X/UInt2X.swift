@@ -313,7 +313,7 @@ extension UInt2X {
 }
 // UInt2X -> String
 extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
-    public func toString(radix: Int = 10, uppercase: Bool = false) -> String {
+    public func toString(radix:Int=10, uppercase:Bool=false) -> String {
         precondition((2...36) ~= radix, "radix must be within the range of 2-36.")
         if self == 0 { return "0" }
         var result = [Character]()
@@ -332,6 +332,11 @@ extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
     }
     public var debugDescription:String {
         return "0x" + toString(radix: 16)
+    }
+}
+extension StringProtocol {
+    public init?<Word>(_ source:UInt2X<Word>, radix:Int=10, uppercase:Bool=false) {
+        self.init(source.toString(radix:radix, uppercase:uppercase))
     }
 }
 // String <- UInt2X
@@ -356,13 +361,16 @@ extension UInt2X : ExpressibleByStringLiteral {
         }
     }
 }
+// Int -> UInt2X
+extension Int {
+    public init<Word>(_ source:UInt2X<Word>) {
+        self.init(bitPattern:UInt(source.hi << Word.bitWidth + source.lo))
+    }
+}
 // Strideable
 extension UInt2X: Strideable {
-    public var asInt:Int {
-        return Int(bitPattern:UInt(self.hi << Word.bitWidth + self.lo))
-    }
     public func distance(to other: UInt2X) -> Int {
-        return other.asInt - self.asInt
+        return Int(other) - Int(self)
     }
     public func advanced(by n: Int) -> UInt2X {
         return self + UInt2X(n)
