@@ -35,7 +35,8 @@ extension UInt2X : ExpressibleByIntegerLiteral {
         self.lo = Word(truncatingIfNeeded:source.magnitude)
     }
     public init?<T>(exactly source: T) where T : BinaryFloatingPoint {
-        return nil
+        guard let u64 = UInt64(exactly: source) else { return nil }
+        self.init(u64)
     }
     public init<T>(_ source: T) where T : BinaryFloatingPoint {
         self.init(UInt64(source))
@@ -308,7 +309,7 @@ extension UInt2X {
         return (UInt2X(hi:q0.lo, lo:q1.lo), r)
     }
 }
-// stringification
+// UInt2X -> String
 extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
     public func toString(radix: Int = 10, uppercase: Bool = false) -> String {
         precondition((2...36) ~= radix, "radix must be within the range of 2-36.")
@@ -331,6 +332,28 @@ extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
         return "0x" + toString(radix: 16)
     }
 }
+// String <- UInt2X
+extension UInt2X : ExpressibleByStringLiteral {
+    public init(stringLiteral value: StringLiteralType) {
+        self.init()
+        if let result = UInt2X.fromString(value) {
+            self = result
+        }
+    }
+    private static func fromString(_ value: String) -> UInt2X? {
+        let radix = UInt2X.radixFromString(value)
+        let source = radix == 10 ? value : String(value.dropFirst(2))
+        return UInt2X(source, radix:radix)
+    }
+    private static func radixFromString(_ string: String) -> Int {
+        switch string.prefix(2) {
+        case "0b": return 2
+        case "0o": return 8
+        case "0x": return 16
+        default:   return 10
+        }
+    }
+}
 // Strideable
 extension UInt2X: Strideable {
     public var asInt:Int {
@@ -343,6 +366,7 @@ extension UInt2X: Strideable {
         return self + UInt2X(n)
     }
 }
+// BinaryInteger
 extension UInt2X: BinaryInteger {
     public var bitWidth: Int {
         return Word.bitWidth * 2
@@ -369,6 +393,7 @@ extension UInt2X: BinaryInteger {
         lhs = lhs.rShifted(Int(rhs))
     }
 }
+// FixedWidthInteger
 extension UInt2X: FixedWidthInteger {
     public init(_truncatingBits bits: UInt) {
         fatalError()
@@ -386,6 +411,7 @@ extension UInt2X: FixedWidthInteger {
         return Word.bitWidth * 2
     }
 }
+// UnsignedInteger
 extension UInt2X: UnsignedInteger {}
 
 public typealias UInt128    = UInt2X<UInt64>

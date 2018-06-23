@@ -11,7 +11,7 @@ func fact<T:FixedWidthInteger>(_ n:T)->T {
 }
 
 //print( fact(UInt512(97)) )
-var u1024 = fact(UInt1024(100)).description
+var u1024 = fact(UInt1024(128)).description
 print(u1024)
 //var u1024 = UInt1024(98)
 //dump(u1024)
