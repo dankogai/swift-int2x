@@ -35,4 +35,6 @@ func fact<T:FixedWidthInteger>(_ n:T)->T {
 
 fact(Int128(34))
 
+var i256:Int256 = "-0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+
 //: [Next](@next)

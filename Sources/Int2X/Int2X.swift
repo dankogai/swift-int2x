@@ -151,6 +151,7 @@ extension Int2X {
         return lhs = lhs &<< rhs
     }
 }
+// division
 extension Int2X {
     public func quotientAndRemainder(dividingBy other: Int2X) -> (quotient: Int2X, remainder: Int2X) {
         let qv = self.magnitude.quotientAndRemainder(dividingBy:other.magnitude)
@@ -193,6 +194,25 @@ extension Int2X : CustomStringConvertible, CustomDebugStringConvertible {
     }
     public var debugDescription:String {
         return (self.isNegative ? "-" : "+") + "0x" + self.magnitude.toString(radix:16)
+    }
+}
+// String <- UInt2X
+extension Int2X : ExpressibleByStringLiteral {
+    public init(stringLiteral value: StringLiteralType) {
+        self.init()
+        if let result = Int2X.fromString(value) {
+            self = result
+        }
+    }
+    internal static func fromString(_ value: String) -> Int2X? {
+        var source = value
+        var sign   = "+"
+        if source.first == "-" || source.first == "+" {
+            sign = String(source.first!)
+            source.removeFirst()
+        }
+        guard let magnitude = Magnitude.fromString(source) else { return nil }
+        return sign == "-" ? -Int2X(rawValue: magnitude) : +Int2X(rawValue: magnitude)
     }
 }
 // Strideable

@@ -342,12 +342,12 @@ extension UInt2X : ExpressibleByStringLiteral {
             self = result
         }
     }
-    private static func fromString(_ value: String) -> UInt2X? {
+    internal static func fromString(_ value: String) -> UInt2X? {
         let radix = UInt2X.radixFromString(value)
         let source = radix == 10 ? value : String(value.dropFirst(2))
         return UInt2X(source, radix:radix)
     }
-    private static func radixFromString(_ string: String) -> Int {
+    internal static func radixFromString(_ string: String) -> Int {
         switch string.prefix(2) {
         case "0b": return 2
         case "0o": return 8
