@@ -36,6 +36,6 @@ var u256 = fact(U256(57)).description
 
 typealias U512 = UInt2X<U256>
 
-var u512 = fact(U512(57)).description
+var u512 = fact(U512(98)).description
 
 ////: [Next](@next)

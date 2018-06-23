@@ -1,7 +1,7 @@
 public typealias UInt1X = FixedWidthInteger & BinaryInteger & UnsignedInteger & Codable
 
 public struct UInt2X<Word:UInt1X>: Hashable, Codable {
-    public typealias IntegerLiteralType = UInt
+    public typealias IntegerLiteralType = UInt64
     public typealias Magnitude = UInt2X
     public typealias Words = [Word.Words.Element]
     public typealias Stride = Int
@@ -10,7 +10,7 @@ public struct UInt2X<Word:UInt1X>: Hashable, Codable {
     public init(hi:Word, lo:Word) { (self.hi, self.lo) = (hi, lo) }
     public init(_ source:UInt2X){ (hi, lo) = (source.hi, source.lo) }
 }
-// address auto equatability bug of Swift 4.1 :-(
+// Generic numerics need to manually implement ==
 extension UInt2X {
     public static func ==(_ lhs:UInt2X, _ rhs:UInt2X)->Bool {
         return lhs.hi == rhs.hi && lhs.lo == rhs.lo
@@ -21,13 +21,15 @@ extension UInt2X : ExpressibleByIntegerLiteral {
     public static var isSigned: Bool { return false }
     public static var min:UInt2X { return UInt2X(hi:Word.min, lo:Word.min) }
     public static var max:UInt2X { return UInt2X(hi:Word.max, lo:Word.max) }
+    public init(_ source: Word) {
+        (hi, lo) = (0, source)
+    }
     public init?<T>(exactly source: T) where T : BinaryInteger {
         guard Word.bitWidth * 2 <= source.bitWidth else { return nil }
-        self.hi = Word(source >> Word.bitWidth)
-        self.lo = Word(source == 0 ? 0 : source & T(clamping:Word.max))
+        self.init(source)
     }
     public init<T>(_ source: T) where T : BinaryInteger  {
-        if source is Int {
+        if T.isSigned {
             self.hi = Word(source.magnitude >> Word.bitWidth)
             self.lo = Word(clamping:source.magnitude)
         } else {
@@ -39,10 +41,10 @@ extension UInt2X : ExpressibleByIntegerLiteral {
         return nil
     }
     public init<T>(_ source: T) where T : BinaryFloatingPoint {
-        self.init(UInt(source))
+        self.init(UInt64(source))
     }
     public init<T:BinaryInteger>(truncatingIfNeeded source: T) {
-        if source is Int {
+        if T.isSigned {
             self.hi = Word(source.magnitude >> Word.bitWidth)
             self.lo = Word(clamping:source.magnitude)
         } else {
@@ -51,15 +53,16 @@ extension UInt2X : ExpressibleByIntegerLiteral {
         }
     }
     public init<T:BinaryInteger>(clamping source: T) {
-        if source is Int {
-            self.hi = Word(source.magnitude >> Word.bitWidth)
+        if T.isSigned {
+            self.hi = Word(clamping:source.magnitude >> Word.bitWidth)
             self.lo = Word(clamping:source.magnitude)
         } else {
-            self.hi = Word(source >> Word.bitWidth)
+            // print("\(#line):\(T.self):\(Word.self):\(Word.bitWidth)")
+            self.hi = Word(clamping:source >> Word.bitWidth)
             self.lo = Word(source & T(clamping:Word.max))
         }
     }
-    public init(integerLiteral value: UInt) {
+    public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
     }
 }
@@ -397,4 +400,10 @@ extension UInt2X: FixedWidthInteger {
     }
 }
 extension UInt2X: UnsignedInteger {}
+
+public typealias UInt128    = UInt2X<UInt64>
+public typealias UInt256    = UInt2X<UInt128>
+public typealias UInt512    = UInt2X<UInt256>
+public typealias UInt1024   = UInt2X<UInt512>
+
 
