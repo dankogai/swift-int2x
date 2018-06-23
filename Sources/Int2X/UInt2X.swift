@@ -25,17 +25,14 @@ extension UInt2X : ExpressibleByIntegerLiteral {
         (hi, lo) = (0, source)
     }
     public init?<T>(exactly source: T) where T : BinaryInteger {
-        guard Word.bitWidth * 2 <= source.bitWidth else { return nil }
+        guard source.bitWidth <= UInt2X.bitWidth || source <= T(UInt2X.max) else {
+            return nil
+        }
         self.init(source)
     }
     public init<T>(_ source: T) where T : BinaryInteger  {
-        if T.isSigned {
-            self.hi = Word(source.magnitude >> Word.bitWidth)
-            self.lo = Word(clamping:source.magnitude)
-        } else {
-            self.hi = Word(source >> Word.bitWidth)
-            self.lo = Word(source & T(clamping:Word.max))
-        }
+        self.hi = Word(source.magnitude >> Word.bitWidth)
+        self.lo = Word(truncatingIfNeeded:source.magnitude)
     }
     public init?<T>(exactly source: T) where T : BinaryFloatingPoint {
         return nil
@@ -43,24 +40,14 @@ extension UInt2X : ExpressibleByIntegerLiteral {
     public init<T>(_ source: T) where T : BinaryFloatingPoint {
         self.init(UInt64(source))
     }
+    // alway succeeds
     public init<T:BinaryInteger>(truncatingIfNeeded source: T) {
-        if T.isSigned {
-            self.hi = Word(source.magnitude >> Word.bitWidth)
-            self.lo = Word(clamping:source.magnitude)
-        } else {
-            self.hi = Word(source >> Word.bitWidth)
-            self.lo = Word(source & T(clamping:Word.max))
-        }
+        self.hi = Word(truncatingIfNeeded:source.magnitude >> Word.bitWidth)
+        self.lo = Word(truncatingIfNeeded:source.magnitude)
     }
+    // alway succeeds
     public init<T:BinaryInteger>(clamping source: T) {
-        if T.isSigned {
-            self.hi = Word(clamping:source.magnitude >> Word.bitWidth)
-            self.lo = Word(clamping:source.magnitude)
-        } else {
-            // print("\(#line):\(T.self):\(Word.self):\(Word.bitWidth)")
-            self.hi = Word(clamping:source >> Word.bitWidth)
-            self.lo = Word(source & T(clamping:Word.max))
-        }
+        self = UInt2X(exactly: source) ?? UInt2X.max
     }
     public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
