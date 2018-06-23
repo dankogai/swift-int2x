@@ -2,6 +2,7 @@
 <playground version='6.0' target-platform='macos'>
     <pages>
         <page name='Synopsis'/>
-        <page name='Scratch'/>
+        <page name='ScratchInt2X'/>
+        <page name='ScratchUInt2X'/>
     </pages>
 </playground>

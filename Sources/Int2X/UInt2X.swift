@@ -19,6 +19,9 @@ extension UInt2X {
 // initializers & Constants
 extension UInt2X : ExpressibleByIntegerLiteral {
     public static var isSigned: Bool { return false }
+    public static var bitWidth: Int {
+        return Word.bitWidth * 2
+    }
     public static var min:UInt2X { return UInt2X(hi:Word.min, lo:Word.min) }
     public static var max:UInt2X { return UInt2X(hi:Word.max, lo:Word.max) }
     public init(_ source: Word) {
@@ -224,7 +227,6 @@ extension UInt2X {
     public static func &<<=(_ lhs:inout UInt2X, _ rhs:UInt2X) {
         return lhs = lhs &<< rhs
     }
-
 }
 // division, which is rather tough
 extension UInt2X {
@@ -406,9 +408,6 @@ extension UInt2X: FixedWidthInteger {
     }
     public var byteSwapped: UInt2X {
         return UInt2X(hi:self.lo.byteSwapped, lo:self.hi.byteSwapped)
-    }
-    public static var bitWidth: Int {
-        return Word.bitWidth * 2
     }
 }
 // UnsignedInteger
