@@ -11,6 +11,14 @@ public struct UInt2X<Word:UInt1X>: Hashable, Codable {
     public init(hi:Word, lo:Word) { (self.hi, self.lo) = (hi, lo) }
     public init(_ source:UInt2X){ (hi, lo) = (source.hi, source.lo) }
 }
+// Swift bug?
+// auto-generated == incorrectly reports
+// UInt2X(hi:nonzero, lo:0) == 0 is true
+extension UInt2X {
+    public static func == (_ lhs: UInt2X, _ rhs: UInt2X)->Bool {
+        return lhs.hi == rhs.hi && lhs.lo == rhs.lo
+    }
+}
 extension UInt2X : ExpressibleByIntegerLiteral {
     public static var isSigned: Bool { return false }
     public static var bitWidth: Int {
@@ -161,6 +169,36 @@ extension UInt2X : Numeric {
     }
     // subtraction
     public func subtractingReportingOverflow(_ other: UInt2X) -> (partialValue: UInt2X, overflow: Bool) {
+        guard self  != 0 else { return (-other, false) }
+        guard other != 0 else { return (+self,  false) }
+        if UInt2X.isAccelerated {
+            // print("line \(#line):Accelerated! \(UInt2X.self)(\(self)).subtractingReportingOverflow(\(other))")
+            switch self {
+            case is UInt128:
+                var a = unsafeBitCast((self,  vU128()), to:vU256.self)
+                var b = unsafeBitCast((other, vU128()), to:vU256.self)
+                var ab = vU256()
+                vU256Sub(&a, &b, &ab)
+                let (r, o) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
+                return (r, o != 0)
+            case is UInt256:
+                var a = unsafeBitCast((self,  vU256()), to:vU512.self)
+                var b = unsafeBitCast((other, vU256()), to:vU512.self)
+                var ab = vU512()
+                vU512Sub(&a, &b, &ab)
+                let (r, o) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
+                return (r, o != 0)
+            case is UInt512:
+                var a = unsafeBitCast((self,  vU512()), to:vU1024.self)
+                var b = unsafeBitCast((other, vU512()), to:vU1024.self)
+                var ab = vU1024()
+                vU1024Sub(&a, &b, &ab)
+                let (r, o) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
+                return (r, o != 0)
+            default:
+                fatalError("\(UInt2X.self) cannot be accelerated!")
+            }
+        }
         return self.addingReportingOverflow(-other)
     }
     public func subtractingReportingOverflow(_ other: Word) -> (partialValue: UInt2X, overflow: Bool) {
@@ -187,6 +225,8 @@ extension UInt2X : Numeric {
     }
     // multiplication
     public func multipliedHalfWidth(by other: Word) -> (high: UInt2X, low: Magnitude) {
+        guard self  != 0 else { return (0, 0) }
+        guard other != 0 else { return (0, 0) }
         let l = self.lo.multipliedFullWidth(by:other)
         let h = self.hi.multipliedFullWidth(by:other)
         let r0          = Word(l.low)
@@ -195,6 +235,8 @@ extension UInt2X : Numeric {
         return (UInt2X(hi:0, lo:r2), UInt2X(hi:r1, lo:r0))
     }
     public func multipliedFullWidth(by other: UInt2X) -> (high: UInt2X, low: Magnitude) {
+        guard self  != 0 else { return (0, 0) }
+        guard other != 0 else { return (0, 0) }
         if UInt2X.isAccelerated {
             // print("line \(#line):Accelerated! \(UInt2X.self)(\(self)).multipliedFullWidth(by:\(other))")
             switch self {

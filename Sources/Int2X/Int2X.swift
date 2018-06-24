@@ -10,6 +10,14 @@ public struct Int2X<Word:UInt1X>: Hashable, Codable {
     public init(_ source:Int2X) { self.rawValue = source.rawValue }
     public init() {}
 }
+// Swift bug?
+// auto-generated == fatalError()'s
+// UInt2X(hi:nonzero, lo:0) == 0
+extension Int2X {
+    public static func == (_ lhs: Int2X, _ rhs: Int2X)->Bool {
+        return lhs.rawValue == rhs.rawValue
+    }
+}
 extension Int2X : ExpressibleByIntegerLiteral {
     public static var isSigned: Bool { return true }
     public static var bitWidth: Int { return Magnitude.bitWidth }
