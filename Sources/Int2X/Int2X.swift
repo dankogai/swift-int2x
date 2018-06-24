@@ -10,6 +10,18 @@ public struct Int2X<Word:UInt1X>: Hashable, Codable {
     public init(_ source:Int2X) { self.rawValue = source.rawValue }
     public init() {}
 }
+// Swift Bug? auto-generated == fails for some cases
+extension Int2X {
+    public static func ==(_ lhs:Int2X, _ rhs:Int2X)->Bool {
+        return lhs.rawValue  == rhs.rawValue
+    }
+    public static func ==<T:BinaryInteger>(_ lhs:Int2X, _ rhs:T)->Bool {
+        return lhs == Int2X(rhs)
+    }
+    public static func ==<T:BinaryInteger>(_ lhs:T, _ rhs:Int2X)->Bool {
+        return Int2X(lhs) == rhs
+    }
+}
 extension Int2X : ExpressibleByIntegerLiteral {
     public static var isSigned: Bool { return true }
     public static var bitWidth: Int { return Magnitude.bitWidth }
@@ -80,7 +92,7 @@ extension Int2X : Numeric {
     // additions
     public func addingReportingOverflow(_ other: Int2X) -> (partialValue: Int2X, overflow: Bool) {
         let (pv, of) = self.rawValue.addingReportingOverflow(other.rawValue)
-        return (Int2X(rawValue:pv), of)
+        return (Int2X(rawValue:pv), of && pv != Int2X.min.rawValue) // -Int2X.max-1 is okay
         
     }
     public static func &+(_ lhs:Int2X, _ rhs:Int2X)->Int2X {
@@ -97,8 +109,7 @@ extension Int2X : Numeric {
     // subtraction
     public func subtractingReportingOverflow(_ other: Int2X) -> (partialValue: Int2X, overflow: Bool) {
         let (pv, of) = self.rawValue.subtractingReportingOverflow(other.rawValue)
-        return (Int2X(rawValue:pv), of)
-        
+        return (Int2X(rawValue:pv), of && pv != Int2X.min.rawValue) // -Int2X.max-1 is okay
     }
     public static func &-(_ lhs:Int2X, _ rhs:Int2X)->Int2X {
         return lhs.subtractingReportingOverflow(rhs).partialValue
