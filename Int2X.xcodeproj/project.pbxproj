@@ -33,21 +33,21 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		9EB8F9C620DD3BB200A19CE8 /* PBXContainerItemProxy */ = {
+		9ED298EA20DF3AB400A19CE8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = "Int2X::Int2X";
 			remoteInfo = Int2X;
 		};
-		9EB8F9C720DD3BB200A19CE8 /* PBXContainerItemProxy */ = {
+		9ED298EB20DF3AB400A19CE8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = "Int2X::Int2X";
 			remoteInfo = Int2X;
 		};
-		9EB8F9C820DD3BB200A19CE8 /* PBXContainerItemProxy */ = {
+		9ED298EC20DF3AB400A19CE8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
@@ -306,17 +306,17 @@
 		OBJ_42 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "Int2X::Int2XTests" /* Int2XTests */;
-			targetProxy = 9EB8F9C820DD3BB200A19CE8 /* PBXContainerItemProxy */;
+			targetProxy = 9ED298EC20DF3AB400A19CE8 /* PBXContainerItemProxy */;
 		};
 		OBJ_52 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "Int2X::Int2X" /* Int2X */;
-			targetProxy = 9EB8F9C620DD3BB200A19CE8 /* PBXContainerItemProxy */;
+			targetProxy = 9ED298EA20DF3AB400A19CE8 /* PBXContainerItemProxy */;
 		};
 		OBJ_62 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "Int2X::Int2X" /* Int2X */;
-			targetProxy = 9EB8F9C720DD3BB200A19CE8 /* PBXContainerItemProxy */;
+			targetProxy = 9ED298EB20DF3AB400A19CE8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

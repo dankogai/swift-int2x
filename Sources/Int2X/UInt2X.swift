@@ -5,15 +5,25 @@ public struct UInt2X<Word:UInt1X>: Hashable, Codable {
     public typealias Magnitude = UInt2X
     public typealias Words = [Word.Words.Element]
     public typealias Stride = Int
-    public var hi:Word = 0
+    // internally it is least significant word first to make Accelerate happy
     public var lo:Word = 0
+    public var hi:Word = 0
     public init(hi:Word, lo:Word) { (self.hi, self.lo) = (hi, lo) }
     public init(_ source:UInt2X){ (hi, lo) = (source.hi, source.lo) }
 }
-// Generic numerics need to manually implement ==
+// Swift Bug? with auto-generated  ==
+// UInt2X(hi:1<<(Word.bitWidth - 1) lo:0) == 0 // gets true!
+// though
+// UInt2X(hi:1<<(Word.bitWidth - 1) lo:0) == UInt2X(0)  // is false
 extension UInt2X {
     public static func ==(_ lhs:UInt2X, _ rhs:UInt2X)->Bool {
         return lhs.hi == rhs.hi && lhs.lo == rhs.lo
+    }
+    public static func ==<T:BinaryInteger>(_ lhs:UInt2X, _ rhs:T)->Bool {
+        return lhs == UInt2X(rhs)
+    }
+    public static func ==<T:BinaryInteger>(_ lhs:T, _ rhs:UInt2X)->Bool {
+        return UInt2X(lhs) == rhs
     }
 }
 // initializers & Constants
@@ -63,6 +73,20 @@ extension UInt2X : Comparable {
         return lhs.hi < rhs.hi ? true : lhs.hi == rhs.hi && lhs.lo < rhs.lo
     }
 }
+// Accelerate support
+#if os(OSX)
+// careful with the significance order.  Accerelate is least significant first.
+import Accelerate
+#endif
+public extension UInt2X {
+    public static var isAccelerated:Bool {
+        #if os(OSX)
+        return Word.self == UInt64.self || Word.self == UInt128.self || Word.self == UInt256.self
+        #else
+        return false
+        #endif
+    }
+}
 // numeric
 extension UInt2X : Numeric {
    public var magnitude: UInt2X {
@@ -80,6 +104,33 @@ extension UInt2X : Numeric {
     }
     // additions
     public func addingReportingOverflow(_ other: UInt2X) -> (partialValue: UInt2X, overflow: Bool) {
+        if UInt2X.isAccelerated {
+            // print("line \(#line):Accelerated!")
+            if Word.self == UInt64.self {
+                var a = unsafeBitCast((self,  vU128()), to:vU256.self)
+                var b = unsafeBitCast((other, vU128()), to:vU256.self)
+                var ab = vU256()
+                vU256Add(&a, &b, &ab)
+                let (r, o) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
+                return (r, o != 0)
+            }
+            if Word.self == UInt128.self {
+                var a = unsafeBitCast((self,  vU256()), to:vU512.self)
+                var b = unsafeBitCast((other, vU256()), to:vU512.self)
+                var ab = vU512()
+                vU512Add(&a, &b, &ab)
+                let (r, o) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
+                return (r, o != 0)
+            }
+            if Word.self == UInt256.self {
+                var a = unsafeBitCast((self,  vU512()), to:vU1024.self)
+                var b = unsafeBitCast((other, vU512()), to:vU1024.self)
+                var ab = vU1024()
+                vU1024Add(&a, &b, &ab)
+                let (r, o) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
+                return (r, o != 0)
+            }
+        }
         var of = false
         let (lv, lf) = self.lo.addingReportingOverflow(other.lo)
         var (hv, uo) = self.hi.addingReportingOverflow(other.hi)
@@ -146,6 +197,33 @@ extension UInt2X : Numeric {
         return (UInt2X(hi:0, lo:r2), UInt2X(hi:r1, lo:r0))
     }
     public func multipliedFullWidth(by other: UInt2X) -> (high: UInt2X, low: Magnitude) {
+        if UInt2X.isAccelerated {
+            // print("line \(#line):Accelerated!")
+            if Word.self == UInt64.self {
+                var a = unsafeBitCast(self,  to:vU128.self)
+                var b = unsafeBitCast(other, to:vU128.self)
+                var ab = vU256()
+                vU128FullMultiply(&a, &b, &ab)
+                let (l, h) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
+                return (h, l)
+            }
+            if Word.self == UInt128.self {
+                var a = unsafeBitCast(self,  to:vU256.self)
+                var b = unsafeBitCast(other, to:vU256.self)
+                var ab = vU512()
+                vU256FullMultiply(&a, &b, &ab)
+                let (l, h) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
+                return (h, l)
+            }
+            if Word.self == UInt256.self {
+                var a = unsafeBitCast(self,  to:vU512.self)
+                var b = unsafeBitCast(other, to:vU512.self)
+                var ab = vU1024()
+                vU512FullMultiply(&a, &b, &ab)
+                let (l, h) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
+                return (h, l)
+            }
+        }
         let l  = self.multipliedHalfWidth(by: other.lo)
         let hs = self.multipliedHalfWidth(by: other.hi)
         let h  = (high:UInt2X(hi:hs.high.lo, lo:hs.low.hi), low:UInt2X(hi:hs.low.lo, lo:0))
@@ -243,6 +321,36 @@ extension UInt2X {
         guard other.hi != 0 else {
             return self.quotientAndRemainder(dividingBy: other.lo)
         }
+        if UInt2X.isAccelerated {
+            // print("line \(#line):Accelerated!")
+            if Word.self == UInt64.self {
+                var a = unsafeBitCast((self,  vU128()), to:vU256.self)
+                var b = unsafeBitCast((other, vU128()), to:vU256.self)
+                var (q, r) = (vU256(), vU256())
+                vU256Divide(&a, &b, &q, &r)
+                let qq = unsafeBitCast(q, to:(UInt2X, UInt2X).self).0
+                let rr = unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
+                return (qq, rr)
+            }
+            if Word.self == UInt128.self {
+                var a = unsafeBitCast((self,  vU256()), to:vU512.self)
+                var b = unsafeBitCast((other, vU256()), to:vU512.self)
+                var (q, r) = (vU512(), vU512())
+                vU512Divide(&a, &b, &q, &r)
+                let qq = unsafeBitCast(q, to:(UInt2X, UInt2X).self).0
+                let rr = unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
+                return (qq, rr)
+            }
+            if Word.self == UInt256.self {
+                var a = unsafeBitCast((self,  vU512()), to:vU1024.self)
+                var b = unsafeBitCast((other, vU512()), to:vU1024.self)
+                var (q, r) = (vU1024(), vU1024())
+                vU1024Divide(&a, &b, &q, &r)
+                let qq = unsafeBitCast(q, to:(UInt2X, UInt2X).self).0
+                let rr = unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
+                return (qq, rr)
+            }
+        }
         #if false
         if Word.bitWidth * 2 <= UInt64.bitWidth { // cheat when we can :-)
             let divided = (UInt64(self.hi)  << Word.bitWidth) +  UInt64(self.lo)
@@ -283,6 +391,36 @@ extension UInt2X {
     public func dividingFullWidth(_ dividend: (high: UInt2X, low: Magnitude)) -> (quotient: UInt2X, remainder: UInt2X) {
         precondition(self != 0, "division by zero!")
         guard dividend.high != 0 else { return dividend.low.quotientAndRemainder(dividingBy: self) }
+        if UInt2X.isAccelerated {
+            // print("line \(#line):Accelerated!")
+            if Word.self == UInt64.self {
+                var a = unsafeBitCast((dividend.low, dividend.high), to:vU256.self)
+                var b = unsafeBitCast((self, vU128()), to:vU256.self)
+                var (q, r) = (vU256(), vU256())
+                vU256Divide(&a, &b, &q, &r)
+                let qq = unsafeBitCast(q, to:(UInt2X, UInt2X).self).0
+                let rr = unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
+                return (qq, rr)
+            }
+            if Word.self == UInt128.self {
+                var a = unsafeBitCast((dividend.low, dividend.high), to:vU512.self)
+                var b = unsafeBitCast((self, vU256()), to:vU512.self)
+                var (q, r) = (vU512(), vU512())
+                vU512Divide(&a, &b, &q, &r)
+                let qq = unsafeBitCast(q, to:(UInt2X, UInt2X).self).0
+                let rr = unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
+                return (qq, rr)
+            }
+            if Word.self == UInt256.self {
+                var a = unsafeBitCast((dividend.low, dividend.high), to:vU1024.self)
+                var b = unsafeBitCast((self, vU512()), to:vU1024.self)
+                var (q, r) = (vU1024(), vU1024())
+                vU1024Divide(&a, &b, &q, &r)
+                let qq = unsafeBitCast(q, to:(UInt2X, UInt2X).self).0
+                let rr = unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
+                return (qq, rr)
+            }
+        }
         // 3-word / 2-word division
         func qr3(dividend:(Word, Word, Word), divider:UInt2X) -> (UInt2X, UInt2X) {
             if divider.hi == 0 {

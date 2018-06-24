@@ -28,8 +28,12 @@ func fact<T:FixedWidthInteger>(_ n:T)->T {
     return n == 0 ? 1 : (1...Int(n)).map{ T($0) }.reduce(1, *)
 }
 
-fact(Int128(34))
+I16.min == I16.min
+I16.min.rawValue 
 
+fact(Int128(34))
+fact(Int256(34))
 var i256:Int256 = "-0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+
 
 //: [Next](@next)

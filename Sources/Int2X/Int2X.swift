@@ -19,11 +19,17 @@ extension Int2X : ExpressibleByIntegerLiteral {
         guard source.bitWidth <= Int2X.bitWidth || source.magnitude <= T(Int2X.max.rawValue) else {
             return nil
         }
+        if !T.isSigned && source & (1 << (source.bitWidth - 1)) != 0 {
+            return nil
+        }
         self.init(source)
     }
     public init<T>(_ source: T) where T : BinaryInteger {
+        if !T.isSigned && source & (1 << (source.bitWidth - 1)) != 0 {
+            fatalError("Not enough bits to represent a signed value")
+        }
         self.rawValue = Magnitude(source.magnitude)
-        if T.isSigned && source < 0 {
+        if T.isSigned && source & (1 << (source.bitWidth - 1)) != 0 {
             self.rawValue = -self.rawValue
         }
     }
@@ -54,7 +60,7 @@ extension Int2X : Comparable {
         return Int2X.max.rawValue < self.rawValue
     }
     public var magnitude:Magnitude {
-        return isNegative ? -rawValue : +rawValue
+        return isNegative ? rawValue == Int2X.min.rawValue ? rawValue : -rawValue : +rawValue
     }
     public static func < (lhs: Int2X, rhs: Int2X) -> Bool {
         return Int2X.max.rawValue < lhs.rawValue &- rhs.rawValue
