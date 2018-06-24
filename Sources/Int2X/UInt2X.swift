@@ -77,19 +77,6 @@ public class Int2XConfig {
     public static let useAccelerate = false
     #endif
 }
-public extension UInt2X {
-    public static var isAccelerated:Bool {
-        #if os(macOS) || os(iOS)
-        guard Int2XConfig.useAccelerate else { return false }
-        switch Word(0) {
-        case is UInt64, is UInt128, is UInt256 : return true
-        default: return false
-        }
-        #else
-        return false
-        #endif
-    }
-}
 // numeric
 extension UInt2X : Numeric {
    public var magnitude: UInt2X {
@@ -109,7 +96,7 @@ extension UInt2X : Numeric {
     public func addingReportingOverflow(_ other: UInt2X) -> (partialValue: UInt2X, overflow: Bool) {
         guard self  != 0 else { return (other, false) }
         guard other != 0 else { return (self,  false) }
-        if UInt2X.isAccelerated {
+        if Int2XConfig.useAccelerate {
             //print("line \(#line):Accelerated! \(UInt2X.self)(\(self)).addingReportingOverflow(\(other))")
             switch self {
             case is UInt128:
@@ -134,7 +121,7 @@ extension UInt2X : Numeric {
                 let (r, o) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
                 return (r, o != 0)
             default:
-                fatalError("\(UInt2X.self) cannot be accelerated!")
+                break
             }
         }
         var of = false
@@ -171,7 +158,7 @@ extension UInt2X : Numeric {
     public func subtractingReportingOverflow(_ other: UInt2X) -> (partialValue: UInt2X, overflow: Bool) {
         guard self  != 0 else { return (-other, false) }
         guard other != 0 else { return (+self,  false) }
-        if UInt2X.isAccelerated {
+        if Int2XConfig.useAccelerate {
             // print("line \(#line):Accelerated! \(UInt2X.self)(\(self)).subtractingReportingOverflow(\(other))")
             switch self {
             case is UInt128:
@@ -196,7 +183,7 @@ extension UInt2X : Numeric {
                 let (r, o) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
                 return (r, o != 0)
             default:
-                fatalError("\(UInt2X.self) cannot be accelerated!")
+                break
             }
         }
         return self.addingReportingOverflow(-other)
@@ -237,7 +224,7 @@ extension UInt2X : Numeric {
     public func multipliedFullWidth(by other: UInt2X) -> (high: UInt2X, low: Magnitude) {
         guard self  != 0 else { return (0, 0) }
         guard other != 0 else { return (0, 0) }
-        if UInt2X.isAccelerated {
+        if Int2XConfig.useAccelerate {
             // print("line \(#line):Accelerated! \(UInt2X.self)(\(self)).multipliedFullWidth(by:\(other))")
             switch self {
             case is UInt128:
@@ -262,7 +249,7 @@ extension UInt2X : Numeric {
                 let (l, h) = unsafeBitCast(ab, to:(UInt2X, UInt2X).self)
                 return (h, l)
             default:
-                fatalError("\(UInt2X.self) cannot be accelerated!")
+                break
             }
         }
         let l  = self.multipliedHalfWidth(by: other.lo)
@@ -315,6 +302,33 @@ extension UInt2X {
         if width <  0 { return self.lShifted(-width) }
         if width == 0 { return self }
         if width == Word.bitWidth     { return UInt2X(hi:0, lo:self.hi) }
+        if Int2XConfig.useAccelerate {
+            // print("line \(#line):Accelerated! \(UInt2X.self)(\(self)).rShifted(\(other))")
+            switch self {
+            case is UInt128:
+                var a = unsafeBitCast((self,  vU128()), to:vU256.self)
+                var r = vU256()
+                vLR256Shift(&a, UInt32(width), &r)
+                return unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
+            case is UInt256:
+                var a = unsafeBitCast(self, to:vU256.self)
+                var r = vU256()
+                vLR256Shift(&a, UInt32(width), &r)
+                return unsafeBitCast(r, to:UInt2X.self)
+            case is UInt512:
+                var a = unsafeBitCast(self, to:vU512.self)
+                var r = vU512()
+                vLR512Shift(&a, UInt32(width), &r)
+                return unsafeBitCast(r, to:UInt2X.self)
+            case is UInt1024:
+                var a = unsafeBitCast(self, to:vU1024.self)
+                var r = vU1024()
+                vLR1024Shift(&a, UInt32(width), &r)
+                return unsafeBitCast(r, to:UInt2X.self)
+            default:
+                break
+            }
+        }
         if Word.bitWidth < width {
             return UInt2X(hi:0, lo:self.hi >> (width - Word.bitWidth))
         }
@@ -328,6 +342,33 @@ extension UInt2X {
         if width <  0 { return self.rShifted(-width) }
         if width == 0 { return self }
         if width == Word.bitWidth     { return UInt2X(hi:self.lo, lo:0) }
+        if Int2XConfig.useAccelerate {
+            // print("line \(#line):Accelerated! \(UInt2X.self)(\(self)).lShifted(\(other))")
+            switch self {
+            case is UInt128:
+                var a = unsafeBitCast((self,  vU128()), to:vU256.self)
+                var r = vU256()
+                vLL256Shift(&a, UInt32(width), &r)
+                return unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
+            case is UInt256:
+                var a = unsafeBitCast(self, to:vU256.self)
+                var r = vU256()
+                vLL256Shift(&a, UInt32(width), &r)
+                return unsafeBitCast(r, to:UInt2X.self)
+            case is UInt512:
+                var a = unsafeBitCast(self, to:vU512.self)
+                var r = vU512()
+                vLL512Shift(&a, UInt32(width), &r)
+                return unsafeBitCast(r, to:UInt2X.self)
+            case is UInt1024:
+                var a = unsafeBitCast(self, to:vU1024.self)
+                var r = vU1024()
+                vLL1024Shift(&a, UInt32(width), &r)
+                return unsafeBitCast(r, to:UInt2X.self)
+            default:
+                break
+            }
+        }
         if Word.bitWidth < width {
             return UInt2X(hi:self.lo << (width - Word.bitWidth), lo:0)
         }
@@ -364,7 +405,7 @@ extension UInt2X {
         guard other.hi != 0 else {
             return self.quotientAndRemainder(dividingBy: other.lo)
         }
-        if UInt2X.isAccelerated {
+        if Int2XConfig.useAccelerate {
             // print("line \(#line):Accelerated! \(UInt2X.self)(\(self)).quotientAndRemainder(dividingBy:\(other))")
             switch self {
             case is UInt128:
@@ -376,23 +417,31 @@ extension UInt2X {
                 let rr = unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
                 return (qq, rr)
             case is UInt256:
-                var a = unsafeBitCast((self,  vU256()), to:vU512.self)
-                var b = unsafeBitCast((other, vU256()), to:vU512.self)
-                var (q, r) = (vU512(), vU512())
-                vU512Divide(&a, &b, &q, &r)
-                let qq = unsafeBitCast(q, to:(UInt2X, UInt2X).self).0
-                let rr = unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
+                var a = unsafeBitCast(self,  to:vU256.self)
+                var b = unsafeBitCast(other, to:vU256.self)
+                var (q, r) = (vU256(), vU256())
+                vU256Divide(&a, &b, &q, &r)
+                let qq = unsafeBitCast(q, to:UInt2X.self)
+                let rr = unsafeBitCast(r, to:UInt2X.self)
                 return (qq, rr)
             case is UInt512:
-                var a = unsafeBitCast((self,  vU512()), to:vU1024.self)
-                var b = unsafeBitCast((other, vU512()), to:vU1024.self)
+                var a = unsafeBitCast(self,  to:vU512.self)
+                var b = unsafeBitCast(other, to:vU512.self)
+                var (q, r) = (vU512(), vU512())
+                vU512Divide(&a, &b, &q, &r)
+                let qq = unsafeBitCast(q, to:UInt2X.self)
+                let rr = unsafeBitCast(r, to:UInt2X.self)
+                return (qq, rr)
+            case is UInt1024:
+                var a = unsafeBitCast(self,  to:vU1024.self)
+                var b = unsafeBitCast(other, to:vU1024.self)
                 var (q, r) = (vU1024(), vU1024())
                 vU1024Divide(&a, &b, &q, &r)
-                let qq = unsafeBitCast(q, to:(UInt2X, UInt2X).self).0
-                let rr = unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
+                let qq = unsafeBitCast(q, to:UInt2X.self)
+                let rr = unsafeBitCast(r, to:UInt2X.self)
                 return (qq, rr)
-            default:
-                fatalError("\(UInt2X.self) cannot be accelerated!")
+           default:
+                break
             }
         }
         #if false
@@ -413,7 +462,6 @@ extension UInt2X {
                 r -= other
                 q |= (1 << i)
             }
-            // print("line \(#line): \(self, other, q, r)")
         }
         return (q, r)
     }
@@ -438,7 +486,7 @@ extension UInt2X {
     public func dividingFullWidth(_ dividend: (high: UInt2X, low: Magnitude)) -> (quotient: UInt2X, remainder: UInt2X) {
         precondition(self != 0, "division by zero!")
         guard dividend.high != 0 else { return dividend.low.quotientAndRemainder(dividingBy: self) }
-        if UInt2X.isAccelerated {
+        if Int2XConfig.useAccelerate {
             // print("line \(#line):Accelerated! \(UInt2X.self)(\(self)).dividingFullWidth(\(dividend))")
             switch self {
             case is UInt128:
@@ -466,7 +514,7 @@ extension UInt2X {
                 let rr = unsafeBitCast(r, to:(UInt2X, UInt2X).self).0
                 return (qq, rr)
             default:
-                fatalError("\(UInt2X.self) cannot be accelerated!")
+                break
             }
         }
         // slow but steady bitwise long division
