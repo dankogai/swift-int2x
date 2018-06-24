@@ -404,13 +404,12 @@ extension UInt2X {
         }
         #endif
         let offset = Word.bitWidth - other.hi.leadingZeroBitCount
-        let ql = other.rShifted(offset).lo.dividingFullWidth((high:self.hi, low:self.lo.magnitude)).quotient
-        var q = UInt2X(ql >> offset)
-        while self < other * q { q -= 1 }
+        var q = self.rShifted(offset)
+            .quotientAndRemainder(dividingBy: other.rShifted(offset).lo).quotient
         var r = self - other * q
-        // print("\(#line):(q, r) = (\(q), \(r))")
+        //print("\(#line):(q, r) = (\(q), \(r))")
         while other < r {
-            // print("\(#line):(q, r) = (\(q), \(r))")
+            //print("\(#line):(q, r) = (\(q), \(r))")
             q += 1; r -= other
         }
         return (q, r)
@@ -467,128 +466,34 @@ extension UInt2X {
                 fatalError("\(UInt2X.self) cannot be accelerated!")
             }
         }
-        return self.fastDividingFullWidth((high: dividend.high, low: dividend.low))
+        // 3-word / 2-word division
+        func qr3(dividend:(Word, Word, Word), divider:UInt2X) -> (UInt2X, UInt2X) {
+            if divider.hi == 0 {
+                let (qh, rh) = UInt2X(hi:dividend.0, lo:dividend.1).quotientAndRemainder(dividingBy: divider.lo)
+                let (ql, rl) = UInt2X(hi:rh.lo,      lo:dividend.2).quotientAndRemainder(dividingBy: divider.lo)
+                return (UInt2X(hi:qh.lo, lo:ql.lo), rl)
+            }
+            else {
+                var (q, r) = UInt2X(hi:dividend.0, lo:dividend.1).quotientAndRemainder(dividingBy: divider.hi)
+                var t = divider.multipliedFullWidth(by: q)
+                while UInt2X(hi:dividend.0, lo:dividend.1) < UInt2X(hi:t.high.lo, lo:t.low.hi) {
+                    q -= 1
+                    t = divider.multipliedFullWidth(by: q)
+                }
+                // Subtraction with carry considered.  Bummer.
+                r = UInt2X(dividend.0 - t.high.lo)
+                r = UInt2X(hi:r.lo, lo:dividend.1) - UInt2X(t.low.hi)
+                r = UInt2X(hi:r.lo, lo:dividend.2) - UInt2X(t.low.lo)
+                return (q, r)
+            }
+        }
+        let (dh, dl) = (dividend.high % self, dividend.low)
+        var (q0, q1, r):(UInt2X, UInt2X, UInt2X)
+        (q0, r) = qr3(dividend:(dh.hi, dh.lo, dl.hi), divider:self)
+        (q1, r) = qr3(dividend:( r.hi,  r.lo, dl.lo), divider:self)
+        return (UInt2X(hi:q0.lo, lo:q1.lo), r)
     }
 }
-//
-// fastDividingFullWidth implementation borrowed from attaswift/BigInt
-//
-extension FixedWidthInteger where Magnitude == Self {
-    private var halfShift: Self {
-        return Self(Self.bitWidth / 2)
-    }
-    private var high: Self {
-        return self &>> halfShift
-    }
-    private var low: Self {
-        let mask: Self = 1 &<< halfShift - 1
-        return self & mask
-    }
-    private var upshifted: Self {
-        return self &<< halfShift
-    }
-    private var split: (high: Self, low: Self) {
-        return (self.high, self.low)
-    }
-    private init(_ value: (high: Self, low: Self)) {
-        self = value.high.upshifted + value.low
-    }
-    /// Divide the double-width integer `dividend` by `self` and return the quotient and remainder.
-    ///
-    /// - Requires: `dividend.high < self`, so that the result will fit in a single digit.
-    /// - Complexity: O(1) with 2 divisions, 6 multiplications and ~12 or so additions/subtractions.
-    internal func fastDividingFullWidth(_ dividend: (high: Self, low: Self.Magnitude)) -> (quotient: Self, remainder: Self) {
-        // Division is complicated; doing it with single-digit operations is maddeningly complicated.
-        // This is a Swift adaptation for "divlu2" in Hacker's Delight,
-        // which is in turn a C adaptation of Knuth's Algorithm D (TAOCP vol 2, 4.3.1).
-        precondition(dividend.high < self)
-        
-        // This replaces the implementation in stdlib, which is much slower.
-        // FIXME: Speed up stdlib. It should use full-width idiv on Intel processors, and
-        // fall back to a reasonably fast algorithm elsewhere.
-        
-        // The trick here is that we're actually implementing a 4/2 long division using half-words,
-        // with the long division loop unrolled into two 3/2 half-word divisions.
-        // Luckily, 3/2 half-word division can be approximated by a single full-word division operation
-        // that, when the divisor is normalized, differs from the correct result by at most 2.
-        
-        /// Find the half-word quotient in `u / vn`, which must be normalized.
-        /// `u` contains three half-words in the two halves of `u.high` and the lower half of
-        /// `u.low`. (The weird distribution makes for a slightly better fit with the input.)
-        /// `vn` contains the normalized divisor, consisting of two half-words.
-        ///
-        /// - Requires: u.high < vn && u.low.high == 0 && vn.leadingZeroBitCount == 0
-        func quotient(dividing u: (high: Self, low: Self), by vn: Self) -> Self {
-            let (vn1, vn0) = vn.split
-            // Get approximate quotient.
-            let (q, r) = u.high.quotientAndRemainder(dividingBy: vn1)
-            let p = q * vn0
-            // q is often already correct, but sometimes the approximation overshoots by at most 2.
-            // The code that follows checks for this while being careful to only perform single-digit operations.
-            if q.high == 0 && p <= r.upshifted + u.low { return q }
-            let r2 = r + vn1
-            if r2.high != 0 { return q - 1 }
-            if (q - 1).high == 0 && p - vn0 <= r2.upshifted + u.low { return q - 1 }
-            //assert((r + 2 * vn1).high != 0 || p - 2 * vn0 <= (r + 2 * vn1).upshifted + u.low)
-            return q - 2
-        }
-        /// Divide 3 half-digits by 2 half-digits to get a half-digit quotient and a full-digit remainder.
-        ///
-        /// - Requires: u.high < v && u.low.high == 0 && vn.width = width(Digit)
-        func quotientAndRemainder(dividing u: (high: Self, low: Self), by v: Self) -> (quotient: Self, remainder: Self) {
-            let q = quotient(dividing: u, by: v)
-            // Note that `uh.low` masks off a couple of bits, and `q * v` and the
-            // subtraction are likely to overflow. Despite this, the end result (remainder) will
-            // still be correct and it will fit inside a single (full) Digit.
-            let r = Self(u) &- q &* v
-            assert(r < v)
-            return (q, r)
-        }
-        // Normalize the dividend and the divisor (self) such that the divisor has no leading zeroes.
-        let z = Self(self.leadingZeroBitCount)
-        let w = Self(Self.bitWidth) - z
-        let vn = self << z
-        let un32 = (z == 0 ? dividend.high : (dividend.high &<< z) | (dividend.low &>> w)) // No bits are lost
-        let un10 = dividend.low &<< z
-        let (un1, un0) = un10.split
-        // Divide `(un32,un10)` by `vn`, splitting the full 4/2 division into two 3/2 ones.
-        let (q1, un21) = quotientAndRemainder(dividing: (un32, un1), by: vn)
-        let (q0, rn) = quotientAndRemainder(dividing: (un21, un0), by: vn)
-        // Undo normalization of the remainder and combine the two halves of the quotient.
-        let mod = rn >> z
-        let div = Self((q1, q0))
-        return (div, mod)
-    }
-    /// Return the quotient of the 3/2-word division `x/y` as a single word.
-    ///
-    /// - Requires: (x.0, x.1) <= y && y.0.high != 0
-    /// - Returns: The exact value when it fits in a single word, otherwise `Self`.
-    static func approximateQuotient(dividing x: (Self, Self, Self), by y: (Self, Self)) -> Self {
-        // Start with q = (x.0, x.1) / y.0, (or Word.max on overflow)
-        var q: Self
-        var r: Self
-        if x.0 == y.0 {
-            q = Self.max
-            let (s, o) = x.0.addingReportingOverflow(x.1)
-            if o { return q }
-            r = s
-        }
-        else {
-            (q, r) = y.0.fastDividingFullWidth((x.0, x.1))
-        }
-        // Now refine q by considering x.2 and y.1.
-        // Note that since y is normalized, q * y - x is between 0 and 2.
-        let (ph, pl) = q.multipliedFullWidth(by: y.1)
-        if ph < r || (ph == r && pl <= x.2) { return q }
-        let (r1, ro) = r.addingReportingOverflow(y.0)
-        if ro { return q - 1 }
-        let (pl1, so) = pl.subtractingReportingOverflow(y.1)
-        let ph1 = (so ? ph - 1 : ph)
-        if ph1 < r1 || (ph1 == r1 && pl1 <= x.2) { return q - 1 }
-        return q - 2
-    }
-}
-
 // UInt2X -> String
 extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
     public func toString(radix:Int=10, uppercase:Bool=false) -> String {
