@@ -27,15 +27,10 @@ U16(0) - U16(0)
 func fact<T:FixedWidthInteger>(_ n:T)->T {
     return n == 0 ? 1 : (1...Int(n)).map{ T($0) }.reduce(1, *)
 }
-
-typealias U128 = UInt2X<UInt64>
-var u128 = fact(U128(34))
-
-typealias U256 = UInt2X<U128>
-var u256 = fact(U256(57)).description
-
-typealias U512 = UInt2X<U256>
-
-var u512 = fact(U512(98)).description
+var u128  = fact(UInt128(34))
+var u256  = fact(UInt256(57))
+var u512  = fact(UInt512(98))
+var u1024 = fact(UInt1024(170))
+print(u1024.description)
 
 ////: [Next](@next)

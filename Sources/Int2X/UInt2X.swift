@@ -514,7 +514,7 @@ extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
         repeat {
             qr = qr.quotient.quotientAndRemainder(dividingBy: Word(radix))
             result.append(digits[Int(qr.remainder.lo)])
-        } while qr.quotient != 0
+        } while qr.quotient != UInt2X(0)
         return String(result.reversed())
     }
     public var description:String {

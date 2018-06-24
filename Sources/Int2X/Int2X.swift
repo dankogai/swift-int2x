@@ -22,7 +22,7 @@ extension Int2X : ExpressibleByIntegerLiteral {
     public static var isSigned: Bool { return true }
     public static var bitWidth: Int { return Magnitude.bitWidth }
     public static var max:Int2X { return Int2X(rawValue:Magnitude.max >> 1)    }
-    public static var min:Int2X { return Int2X(rawValue:-Int2X.max.rawValue-1) }
+    public static var min:Int2X { return Int2X(rawValue:(Magnitude.max >> 1) &+ 1) }
     public init?<T>(exactly source: T) where T : BinaryInteger {
         guard source.bitWidth <= Int2X.bitWidth || source.magnitude <= T(Int2X.max.rawValue) else {
             return nil
