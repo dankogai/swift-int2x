@@ -90,7 +90,7 @@ public extension UInt2X {
 // numeric
 extension UInt2X : Numeric {
    public var magnitude: UInt2X {
-        return UInt2X(hi:self.hi, lo:self.lo)
+        return self
     }
     // unary operators
     public static prefix func ~(_ value:UInt2X)->UInt2X {
@@ -454,6 +454,11 @@ extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
     public func toString(radix:Int=10, uppercase:Bool=false) -> String {
         precondition((2...36) ~= radix, "radix must be within the range of 2-36.")
         if self == 0 { return "0" }
+        if radix == 16 { // time-saver
+            let sl = String(self.lo, radix:16)
+            let zeros   = [Character](repeating: "0", count: Word.bitWidth / 4 - sl.count)
+            return String(self.hi, radix:16) + String(zeros) + sl
+        }
         var result = [Character]()
         var qr = (quotient: self, remainder: UInt2X(0))
         let digits = uppercase

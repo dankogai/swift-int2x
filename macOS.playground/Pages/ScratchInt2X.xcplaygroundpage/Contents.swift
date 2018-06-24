@@ -24,12 +24,14 @@ I16(+42).quotientAndRemainder(dividingBy: I16(-5)).remainder
 I16(-42).quotientAndRemainder(dividingBy: I16(-5)).remainder
 (I16(0)..<I16(8))[4]
 
+I16.min.description
+dump(I16.min)
+dump(Int128.min)
+
+
 func fact<T:FixedWidthInteger>(_ n:T)->T {
     return n == 0 ? 1 : (1...Int(n)).map{ T($0) }.reduce(1, *)
 }
-
-I16.min == I16.min
-I16.min.rawValue 
 
 fact(Int128(34))
 fact(Int256(34))
