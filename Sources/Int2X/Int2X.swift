@@ -33,7 +33,7 @@ extension Int2X : ExpressibleByIntegerLiteral {
         self.init(source)
     }
     public init<T>(_ source: T) where T : BinaryInteger {
-        if !T.isSigned && source & (1 << (source.bitWidth - 1)) != 0 {
+        if !T.isSigned && Word.bitWidth * 2 <= source.bitWidth && source & (1 << (source.bitWidth - 1)) != 0 {
             fatalError("Not enough bits to represent a signed value")
         }
         self.rawValue = Magnitude(source.magnitude)

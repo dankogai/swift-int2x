@@ -316,10 +316,10 @@ extension UInt2X {
         if width == 0 { return self }
         if width == Word.bitWidth     { return UInt2X(hi:0, lo:self.hi) }
         if Word.bitWidth < width {
-            return UInt2X(hi:0, lo:self.lo >> (width - Word.bitWidth))
+            return UInt2X(hi:0, lo:self.hi >> (width - Word.bitWidth))
         }
         else {
-            let mask = Word((1 << width) - 1)
+            let mask = Word((1 << width) &- 1)
             let carry = (self.hi & mask) << (Word.bitWidth - width)
             return UInt2X(hi: self.hi >> width, lo: carry | self.lo >> width)
         }
@@ -403,14 +403,17 @@ extension UInt2X {
             return (UInt2X(q), UInt2X(r))
         }
         #endif
-        let offset = Word.bitWidth - other.hi.leadingZeroBitCount
-        var q = self.rShifted(offset)
-            .quotientAndRemainder(dividingBy: other.rShifted(offset).lo).quotient
-        var r = self - other * q
-        //print("\(#line):(q, r) = (\(q), \(r))")
-        while other < r {
-            //print("\(#line):(q, r) = (\(q), \(r))")
-            q += 1; r -= other
+        // slow but steady bitwise long division
+        // print("line \(#line): \(UInt2X.self)(\(self)).quotientAndRemainder(dividingBy:\(other))")
+        var (q, r) = (UInt2X(0), UInt2X(0))
+        for i in (0..<UInt2X.bitWidth).reversed() {
+            r <<= 1
+            r |= (self >> i) & 1
+            if other <= r {
+                r -= other
+                q |= (1 << i)
+            }
+            // print("line \(#line): \(self, other, q, r)")
         }
         return (q, r)
     }
@@ -466,32 +469,18 @@ extension UInt2X {
                 fatalError("\(UInt2X.self) cannot be accelerated!")
             }
         }
-        // 3-word / 2-word division
-        func qr3(dividend:(Word, Word, Word), divider:UInt2X) -> (UInt2X, UInt2X) {
-            if divider.hi == 0 {
-                let (qh, rh) = UInt2X(hi:dividend.0, lo:dividend.1).quotientAndRemainder(dividingBy: divider.lo)
-                let (ql, rl) = UInt2X(hi:rh.lo,      lo:dividend.2).quotientAndRemainder(dividingBy: divider.lo)
-                return (UInt2X(hi:qh.lo, lo:ql.lo), rl)
-            }
-            else {
-                var (q, r) = UInt2X(hi:dividend.0, lo:dividend.1).quotientAndRemainder(dividingBy: divider.hi)
-                var t = divider.multipliedFullWidth(by: q)
-                while UInt2X(hi:dividend.0, lo:dividend.1) < UInt2X(hi:t.high.lo, lo:t.low.hi) {
-                    q -= 1
-                    t = divider.multipliedFullWidth(by: q)
-                }
-                // Subtraction with carry considered.  Bummer.
-                r = UInt2X(dividend.0 - t.high.lo)
-                r = UInt2X(hi:r.lo, lo:dividend.1) - UInt2X(t.low.hi)
-                r = UInt2X(hi:r.lo, lo:dividend.2) - UInt2X(t.low.lo)
-                return (q, r)
+        // slow but steady bitwise long division
+        // print("line \(#line): \(UInt2X.self)(\(self)).dividingFullWidth(\(dividend))")
+        var (q, r) = (UInt2X(0), dividend.high % self)
+        for i in (0..<UInt2X.bitWidth).reversed() {
+            r <<= 1
+            r |= (dividend.low >> i) & 1
+            if self <= r {
+                r -= self
+                q |= (1 << i)
             }
         }
-        let (dh, dl) = (dividend.high % self, dividend.low)
-        var (q0, q1, r):(UInt2X, UInt2X, UInt2X)
-        (q0, r) = qr3(dividend:(dh.hi, dh.lo, dl.hi), divider:self)
-        (q1, r) = qr3(dividend:( r.hi,  r.lo, dl.lo), divider:self)
-        return (UInt2X(hi:q0.lo, lo:q1.lo), r)
+        return (q, r)
     }
 }
 // UInt2X -> String
