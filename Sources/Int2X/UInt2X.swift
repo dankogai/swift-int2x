@@ -11,22 +11,6 @@ public struct UInt2X<Word:UInt1X>: Hashable, Codable {
     public init(hi:Word, lo:Word) { (self.hi, self.lo) = (hi, lo) }
     public init(_ source:UInt2X){ (hi, lo) = (source.hi, source.lo) }
 }
-// Swift Bug? with auto-generated  ==
-// UInt2X(hi:1<<(Word.bitWidth - 1) lo:0) == 0 // gets true!
-// though
-// UInt2X(hi:1<<(Word.bitWidth - 1) lo:0) == UInt2X(0)  // is false
-extension UInt2X {
-    public static func ==(_ lhs:UInt2X, _ rhs:UInt2X)->Bool {
-        return lhs.hi == rhs.hi && lhs.lo == rhs.lo
-    }
-    public static func ==<T:BinaryInteger>(_ lhs:UInt2X, _ rhs:T)->Bool {
-        return lhs == UInt2X(rhs)
-    }
-    public static func ==<T:BinaryInteger>(_ lhs:T, _ rhs:UInt2X)->Bool {
-        return UInt2X(lhs) == rhs
-    }
-}
-// initializers & Constants
 extension UInt2X : ExpressibleByIntegerLiteral {
     public static var isSigned: Bool { return false }
     public static var bitWidth: Int {

@@ -28,7 +28,6 @@ I16.min.toString()
 I16.min.toString(radix:2)
 Int128.min.toString(radix:16)
 
-
 func fact<T:FixedWidthInteger>(_ n:T)->T {
     return n == 0 ? 1 : (1...Int(n)).map{ T($0) }.reduce(1, *)
 }

@@ -10,18 +10,6 @@ public struct Int2X<Word:UInt1X>: Hashable, Codable {
     public init(_ source:Int2X) { self.rawValue = source.rawValue }
     public init() {}
 }
-// Swift Bug? auto-generated == fails for some cases
-extension Int2X {
-    public static func ==(_ lhs:Int2X, _ rhs:Int2X)->Bool {
-        return lhs.rawValue  == rhs.rawValue
-    }
-    public static func ==<T:BinaryInteger>(_ lhs:Int2X, _ rhs:T)->Bool {
-        return lhs == Int2X(rhs)
-    }
-    public static func ==<T:BinaryInteger>(_ lhs:T, _ rhs:Int2X)->Bool {
-        return Int2X(lhs) == rhs
-    }
-}
 extension Int2X : ExpressibleByIntegerLiteral {
     public static var isSigned: Bool { return true }
     public static var bitWidth: Int { return Magnitude.bitWidth }
