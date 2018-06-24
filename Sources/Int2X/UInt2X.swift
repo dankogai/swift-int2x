@@ -273,6 +273,8 @@ extension UInt2X : Numeric {
         return (rh, rl)
     }
     public func multipliedReportingOverflow(by other: UInt2X) -> (partialValue: UInt2X, overflow: Bool) {
+        guard self  != 0 else { return (0, false) }
+        guard other != 0 else { return (0, false) }
         let result = self.multipliedFullWidth(by: other)
         return (result.low, 0 < result.high)
     }
