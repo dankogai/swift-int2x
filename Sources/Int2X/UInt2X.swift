@@ -455,7 +455,7 @@ extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
     public func toString(radix:Int=10, uppercase:Bool=false) -> String {
         precondition((2...36) ~= radix, "radix must be within the range of 2-36.")
         if self == 0 { return "0" }
-        if self.hi == 0 { return String(self.lo, radix:16, uppercase:uppercase) }
+        if self.hi == 0 { return String(self.lo, radix:radix, uppercase:uppercase) }
         if radix == 16 || radix == 4 || radix == 2 { // time-saver
             let sl = String(self.lo, radix:radix, uppercase:uppercase)
             let dCount  = Word.bitWidth / (radix == 16 ? 4 : radix == 4 ? 2 : 1)
