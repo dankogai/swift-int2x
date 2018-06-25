@@ -39,3 +39,65 @@ public typealias Int1024   = Int2X<UInt512>
 ```
 
 As you see, `UInt2X` and `Int2X` themselves are [FixedWidthInteger] so you can stack them up.
+
+## Usage
+
+### build
+
+```sh
+$ git clone https://github.com/dankogai/swift-int2x.git
+$ cd swift-int2x # the following assumes your $PWD is here
+$ swift build
+```
+
+Simply
+
+```sh
+$ scripts/xcode-prep.sh
+```
+
+or
+
+```sh
+$ swift build 
+$ swift -I.build/debug -L.build/debug -lInt2X
+```
+
+and in your repl,
+
+```sh
+Welcome to Apple Swift version 4.1 (swiftlang-902.0.48 clang-902.0.39.1). Type :help for assistance.
+  1> import Int2X 
+  2> Int1024.max.description
+$R0: String = "89884656743115795386465259539451236680898848947115328636715040578866337902750481566354238661203768010560056939935696678829394884407208311246423715319737062188883946712432742638151109800623047059726541476042502884419075341171231440736956555270413618581675255342293149119973622969239858152417678164812112068607"
+```
+
+### From Your SwiftPM-Managed Projects
+
+Add the following to the `dependencies` section:
+
+```
+.package(
+  url: "https://github.com/dankogai/swift-complex.git", from: "0.0.1"
+)
+```
+
+and the following to the `.target` argument:
+
+```
+.target(
+  name: "YourSwiftyPackage",
+  dependencies: ["Int2X"])
+```
+
+Now all you have to do is:
+
+```
+import Int2X
+```
+
+in your code.  Enjoy!
+
+# Prerequisite
+
+Swift 4.1 or better, OS X or Linux to build.
