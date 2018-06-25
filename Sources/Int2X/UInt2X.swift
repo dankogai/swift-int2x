@@ -40,11 +40,17 @@ extension UInt2X : ExpressibleByIntegerLiteral {
         self.lo = Word(truncatingIfNeeded:source.magnitude)
     }
     public init?<T>(exactly source: T) where T : BinaryFloatingPoint {
-        guard let u64 = UInt64(exactly: source) else { return nil }
-        self.init(u64)
+        print("\(#line)", source)
+        guard source.sign != .minus else { return nil }
+        guard source.exponent < UInt2X.bitWidth else { return nil }
+        self = UInt2X(source.significandBitPattern | (1 << T.significandBitCount) )
+        self <<= Int(source.exponent) - T.significandBitCount
     }
     public init<T>(_ source: T) where T : BinaryFloatingPoint {
-        self.init(UInt64(source))
+        guard let result = UInt2X(exactly: source) else {
+            fatalError("Not enough bits to represent a signed value")
+        }
+        self = result
     }
     // alway succeeds
     public init<T:BinaryInteger>(truncatingIfNeeded source: T) {
@@ -546,6 +552,11 @@ extension UInt2X {
         return (q, r)
     }
 }
+#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
+import Darwin
+#else
+import Glibc
+#endif
 // UInt2X -> String
 extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
     public func toString(radix:Int=10, uppercase:Bool=false) -> String {
@@ -558,16 +569,33 @@ extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
             let zeros   = [Character](repeating: "0", count: dCount - sl.count)
             return String(self.hi, radix:radix, uppercase:uppercase) + String(zeros) + sl
         }
-        var result = [Character]()
-        var qr = (quotient: self, remainder: UInt2X(0))
         let digits = uppercase
             ? Array("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
             : Array("0123456789abcdefghijklmnopqrstuvwxyz")
+        #if false // slow but steady digit by digit conversion
+        var result = [Character]()
+        var qr = (quotient: self, remainder: UInt2X(0))
         repeat {
             qr = qr.quotient.quotientAndRemainder(dividingBy: Word(radix))
             result.append(digits[Int(qr.remainder.lo)])
         } while qr.quotient != UInt2X(0)
         return String(result.reversed())
+        #else // faster n-digit-at-once conversion
+        let base = UInt64(pow(Double(radix),floor(Double(UInt64.bitWidth)/(log(Double(radix))/log(2.0)))))
+        let nlen = base.description.count - 1
+        // print("base=",base)
+        var qr = (quotient: self, remainder: UInt2X(0))
+        var result = [UInt64]()
+        repeat {
+            qr = qr.quotient.quotientAndRemainder(dividingBy: UInt2X(base))
+            result.append(UInt64(qr.remainder))
+        }  while qr.quotient != UInt2X(0)
+        let firstDigit = result.removeLast()
+        return String(firstDigit, radix:radix, uppercase:uppercase) + result.map {
+            let s = String($0, radix:radix, uppercase:uppercase)
+            return String([Character](repeating: "0", count:nlen - s.count)) + s
+        }.reversed().joined()
+        #endif
     }
     public var description:String {
         return toString()

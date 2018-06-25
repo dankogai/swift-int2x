@@ -42,11 +42,16 @@ extension Int2X : ExpressibleByIntegerLiteral {
         }
     }
     public init?<T>(exactly source: T) where T : BinaryFloatingPoint {
-        guard let i64 = Int64(exactly: source) else { return nil }
-        self.init(i64)
+        guard let rv = Magnitude(exactly: source.sign == .minus ? -source : +source) else { return nil }
+        self = Int2X(rawValue:rv)
+        guard !self.isNegative else { return nil }
+        if source.sign == .minus { self = -self }
     }
     public init<T>(_ source: T) where T : BinaryFloatingPoint {
-        self.init(Int64(source))
+        guard let result = Int2X(exactly: source) else {
+            fatalError("Not enough bits to represent a signed value")
+        }
+        self = result
     }
     // alway succeeds
     public init<T:BinaryInteger>(truncatingIfNeeded source: T) {
