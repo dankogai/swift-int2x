@@ -50,17 +50,16 @@ $ cd swift-int2x # the following assumes your $PWD is here
 $ swift build
 ```
 
-Simply
+### REPL
 
 ```sh
-$ scripts/xcode-prep.sh
+$ scripts/run-repl.sh
 ```
 
 or
 
 ```sh
-$ swift build 
-$ swift -I.build/debug -L.build/debug -lInt2X
+$ swift build && swift -I.build/debug -L.build/debug -lInt2X
 ```
 
 and in your repl,
