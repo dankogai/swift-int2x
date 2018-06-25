@@ -156,6 +156,7 @@ extension UInt2X : Numeric {
     }
     // subtraction
     public func subtractingReportingOverflow(_ other: UInt2X) -> (partialValue: UInt2X, overflow: Bool) {
+        guard self  != other else { return (0,  false) }
         guard self  != 0 else { return (-other, false) }
         guard other != 0 else { return (+self,  false) }
         if Int2XConfig.useAccelerate {

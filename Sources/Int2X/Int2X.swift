@@ -21,7 +21,7 @@ extension Int2X {
 extension Int2X : ExpressibleByIntegerLiteral {
     public static var isSigned: Bool { return true }
     public static var bitWidth: Int { return Magnitude.bitWidth }
-    public static var max:Int2X { return Int2X(rawValue:Magnitude.max >> 1)    }
+    public static var max:Int2X { return Int2X(rawValue:(Magnitude.max >> 1))    }
     public static var min:Int2X { return Int2X(rawValue:(Magnitude.max >> 1) &+ 1) }
     public init?<T>(exactly source: T) where T : BinaryInteger {
         guard source.bitWidth <= Int2X.bitWidth || source.magnitude <= T(Int2X.max.rawValue) else {
@@ -64,7 +64,7 @@ extension Int2X : ExpressibleByIntegerLiteral {
     }
 }
 extension Int2X : Comparable {
-    public var isNegative:Bool {
+    internal var isNegative:Bool {
         return Int2X.max.rawValue < self.rawValue
     }
     public var magnitude:Magnitude {
@@ -88,7 +88,9 @@ extension Int2X : Numeric {
     // additions
     public func addingReportingOverflow(_ other: Int2X) -> (partialValue: Int2X, overflow: Bool) {
         let (pv, of) = self.rawValue.addingReportingOverflow(other.rawValue)
-        return (Int2X(rawValue:pv), of && pv != Int2X.min.rawValue) // -Int2X.max-1 is okay
+        // For any given int the only possible case that overflows is I.min - I.min
+        // in which case overflow is true and partialValue is 0
+        return (Int2X(rawValue:pv), of && pv == 0)
         
     }
     public static func &+(_ lhs:Int2X, _ rhs:Int2X)->Int2X {
@@ -105,14 +107,14 @@ extension Int2X : Numeric {
     // subtraction
     public func subtractingReportingOverflow(_ other: Int2X) -> (partialValue: Int2X, overflow: Bool) {
         let (pv, of) = self.rawValue.subtractingReportingOverflow(other.rawValue)
-        return (Int2X(rawValue:pv), of && pv != Int2X.min.rawValue) // -Int2X.max-1 is okay
+        return (Int2X(rawValue:pv), of && pv == 0)
     }
     public static func &-(_ lhs:Int2X, _ rhs:Int2X)->Int2X {
         return lhs.subtractingReportingOverflow(rhs).partialValue
     }
     public static func -(_ lhs:Int2X, _ rhs:Int2X)->Int2X {
         let (pv, of) = lhs.subtractingReportingOverflow(rhs)
-        precondition(!of, "\(lhs) + \(rhs): Addition overflow!")
+        precondition(!of, "\(lhs) - \(rhs): Subtruction overflow!")
         return pv
     }
     public static func -= (lhs: inout Int2X, rhs: Int2X) {

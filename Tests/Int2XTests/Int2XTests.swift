@@ -2,11 +2,43 @@ import XCTest
 @testable import Int2X
 
 final class Int2XTests: XCTestCase {
+    func runBasic<Q:FixedWidthInteger>(forType T:Q.Type) {
+        let ua = Int2XConfig.useAccelerate ? [false, true] : [false]
+        for a in [false, true] {
+            if 1 < ua.count { Int2XConfig.useAccelerate = a }
+            XCTAssertEqual(T.min + T.max, T.init(-1))
+            for s in [-1, +1] {
+                var x = s * Int.max
+                for i in 0 ..< Int.bitWidth {
+                    // not XCTAssertEqual because types differ
+                    XCTAssert(T.init(x) == x)
+                    if !x.addingReportingOverflow(x).overflow {
+                        XCTAssert(T.init(x) + T.init(x) == x + x)
+                    }
+                    if !x.subtractingReportingOverflow(x).overflow {
+                        XCTAssert(T.init(x) - T.init(x) == x - x)
+                    }
+                    if !x.multipliedReportingOverflow(by: x).overflow {
+                        XCTAssert(T.init(x) * T.init(x) == x * x)
+                    }
+                    if x != 0 {
+                        XCTAssert(T.init(x) /  T.init(x) == x  / x)
+                    }
+                    x >>= 1
+                }
+            }
+        }
+    }
+    func testBasicInt128()  { runBasic(forType:Int128.self) }
+    func testBasicInt256()  { runBasic(forType:Int256.self) }
+    func testBasicInt512()  { runBasic(forType:Int512.self) }
+    func testBasicInt1024() { runBasic(forType:Int1024.self) }
+
     func runShift<Q:FixedWidthInteger>(forType T:Q.Type) {
         let ua = Int2XConfig.useAccelerate ? [false, true] : [false]
         for a in [false, true] {
             if 1 < ua.count { Int2XConfig.useAccelerate = a }
-            print("\(T.self) bitshift tests (Int2XConfig.useAccelerate = \(Int2XConfig.useAccelerate))")
+            print("\(T.self) bitshift tests: useAccelerate = \(Int2XConfig.useAccelerate)")
             for x in [T.init(-1), T.init(+1)] {
                 XCTAssertEqual(x << T.bitWidth, 0)
                 var y = x
