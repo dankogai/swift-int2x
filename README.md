@@ -76,7 +76,7 @@ $R0: String = "89884656743115795386465259539451236680898848947115328636715040578
 
 Add the following to the `dependencies` section:
 
-```
+```swift
 .package(
   url: "https://github.com/dankogai/swift-complex.git", from: "0.0.1"
 )
@@ -84,7 +84,7 @@ Add the following to the `dependencies` section:
 
 and the following to the `.target` argument:
 
-```
+```swift
 .target(
   name: "YourSwiftyPackage",
   dependencies: ["Int2X"])
@@ -92,7 +92,7 @@ and the following to the `.target` argument:
 
 Now all you have to do is:
 
-```
+```swift
 import Int2X
 ```
 
