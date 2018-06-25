@@ -5,11 +5,7 @@ final class Int2XTests: XCTestCase {
     func runBasic<Q:FixedWidthInteger>(forType T:Q.Type) {
         let ua = Int2XConfig.useAccelerate ? [false, true] : [false]
         for a in ua {
-            if 1 < ua.count {
-                #if os(macOS) || os(iOS)
-                Int2XConfig.useAccelerate = a
-                #endif
-            }
+            if 1 < ua.count { Int2XConfig.useAccelerate = a }
             XCTAssertEqual(T.min + T.max, T.init(-1))
             for s in [-1, +1] {
                 var x = s * Int.max
@@ -40,12 +36,8 @@ final class Int2XTests: XCTestCase {
 
     func runShift<Q:FixedWidthInteger>(forType T:Q.Type) {
         let ua = Int2XConfig.useAccelerate ? [false, true] : [false]
-        for a in [false, true] {
-            if 1 < ua.count {
-                #if os(macOS) || os(iOS)
-                Int2XConfig.useAccelerate = a
-                #endif
-            }
+        for a in ua {
+            if 1 < ua.count { Int2XConfig.useAccelerate = a }
             print("\(T.self) bitshift tests: useAccelerate = \(Int2XConfig.useAccelerate)")
             for x in [T.init(-1), T.init(+1)] {
                 XCTAssertEqual(x << T.bitWidth, 0)
