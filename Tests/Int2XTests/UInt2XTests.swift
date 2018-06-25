@@ -8,28 +8,30 @@ extension UInt2X where Word == UInt8  {
 }
 
 final class UInt2XTests: XCTestCase {
-    typealias U16 = UInt2X<UInt8>
-    func testOp() {
-        for v in 0 ..< UInt8.bitWidth * 2 {
-            for u in 0 ..< UInt8.bitWidth * 2 {
-                let x = UInt(1) << v - 1
-                let y = UInt(1) << u - 1
-                if x < 0x8000 && y < 0x8000 {
-                    XCTAssertEqual(U16(x) + U16(y), U16(x + y))
-                }
-                if y <= x {
-                    XCTAssertEqual(U16(x) - U16(y), U16(x - y))
-                }
-            }
-        }
-        for x in 0 ... UInt(UInt8.max) {
-            for y in 0 ... UInt(UInt8.max) {
-                XCTAssertEqual(U16(x) * U16(y), U16(x * y))
-            }
-        }
-    }
-
-    static var allTests = [
-        ("testAdd", testOp),
-    ]
+//    func runShift<Q:FixedWidthInteger>(forType T:Q.Type) {
+//        let ua = Int2XConfig.useAccelerate ? [false, true] : [false]
+//        for a in [false, true] {
+//            if 1 < ua.count { Int2XConfig.useAccelerate = a }
+//            print("\(T.self) bitshift tests (Int2XConfig.useAccelerate = \(Int2XConfig.useAccelerate))")
+//            XCTAssertEqual(T.init(1) << T.bitWidth, 0)
+//            var y = T.init(1)
+//            for i in 0 ..< (T.bitWidth-1) {
+//                // print("\(T.self)(\(x)) << \(i) == \(y)")
+//                XCTAssertEqual(1 << i, y, "\(i, 1, y)")
+//                // print("\(T.self)(\(y)) >> \(i) == \(x)")
+//                XCTAssertEqual(y >> i, 1, "\(i, 1, y)")
+//                y *= 2
+//            }
+//        }
+//    }
+//    func testShiftUInt128()  { runShift(forType:UInt128.self) }
+//    func testShiftUInt256()  { runShift(forType:UInt256.self) }
+//    func testShiftUInt512()  { runShift(forType:UInt512.self) }
+//    // func testShiftInt1024() { runShift(forType:Int1024.self) }
+//    
+//    static var allTests = [
+//        ("testShiftInt128", testShiftUInt128),
+//        ("testShiftInt256", testShiftUInt256),
+//        ("testShiftInt512", testShiftUInt512),
+//        ]
 }

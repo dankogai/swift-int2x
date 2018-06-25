@@ -125,8 +125,8 @@ extension Int2X : Numeric {
         
     }
     public func multipliedReportingOverflow(by other: Int2X) -> (partialValue: Int2X, overflow: Bool) {
-        let hv = self.multipliedFullWidth(by: other)
-        return (Int2X(rawValue:hv.low), 0 < hv.high)
+        let hv = self.magnitude.multipliedFullWidth(by: other.magnitude)
+        return (self.isNegative != other.isNegative ? -Int2X(rawValue:hv.low) : +Int2X(rawValue:hv.low), 0 < hv.high)
     }
     public static func &*(lhs: Int2X, rhs: Int2X) -> Int2X {
         return lhs.multipliedReportingOverflow(by: rhs).partialValue
@@ -144,11 +144,13 @@ extension Int2X : Numeric {
 extension Int2X {
     public static func &>>(_ lhs:Int2X, _ rhs:Int2X)->Int2X {
         if rhs.isNegative { return lhs &<< -rhs }
+        if Int2X.bitWidth <= rhs { return 0 }
         let rv = lhs.magnitude &>> rhs.magnitude
         return lhs.isNegative ? -Int2X(rawValue:rv) : +Int2X(rawValue:rv)
     }
     public static func &<<(_ lhs:Int2X, _ rhs:Int2X)->Int2X {
         if rhs.isNegative { return lhs &>> -rhs }
+        if Int2X.bitWidth <= rhs { return 0 }
         let rv = lhs.magnitude &<< rhs.magnitude
         return lhs.isNegative ? -Int2X(rawValue:rv) : +Int2X(rawValue:rv)
     }
