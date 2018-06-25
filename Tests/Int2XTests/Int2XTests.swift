@@ -9,7 +9,7 @@ final class Int2XTests: XCTestCase {
             XCTAssertEqual(T.min + T.max, T.init(-1))
             for s in [-1, +1] {
                 var x = s * Int.max
-                for i in 0 ..< Int.bitWidth {
+                for _ in 0 ..< Int.bitWidth {
                     // not XCTAssertEqual because types differ
                     XCTAssert(T.init(x) == x)
                     if !x.addingReportingOverflow(x).overflow {
@@ -22,7 +22,7 @@ final class Int2XTests: XCTestCase {
                         XCTAssert(T.init(x) * T.init(x) == x * x)
                     }
                     if x != 0 {
-                        XCTAssert(T.init(x) /  T.init(x) == x  / x)
+                        XCTAssert(T.init(x) /  T.init(x) == x / x)
                     }
                     x >>= 1
                 }
@@ -59,6 +59,10 @@ final class Int2XTests: XCTestCase {
     // func testShiftInt1024() { runShift(forType:Int1024.self) }
 
     static var allTests = [
+        ("testBasicInt128", testBasicInt128),
+        ("testBasicInt256", testBasicInt256),
+        ("testBasicInt512", testBasicInt512),
+        ("testBasicInt1024", testBasicInt1024),
         ("testShiftInt128", testShiftInt128),
         ("testShiftInt256", testShiftInt256),
         ("testShiftInt512", testShiftInt512),
