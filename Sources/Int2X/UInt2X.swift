@@ -552,11 +552,6 @@ extension UInt2X {
         return (q, r)
     }
 }
-#if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
-import Darwin
-#else
-import Glibc
-#endif
 // UInt2X -> String
 extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
     public func toString(radix:Int=10, uppercase:Bool=false) -> String {
@@ -581,7 +576,18 @@ extension UInt2X : CustomStringConvertible, CustomDebugStringConvertible {
         } while qr.quotient != UInt2X(0)
         return String(result.reversed())
         #else // faster n-digit-at-once conversion
-        let base = UInt64(pow(Double(radix),floor(Double(UInt64.bitWidth)/(log(Double(radix))/log(2.0)))))
+        let base:UInt64 = [
+            0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0xa8b8b452291fe800, //  0 ~  3
+            0x0000000000000000, 0x6765c793fa100800, 0x41c21cb8e1000000, 0x3642798750226200, //  4 ~  7
+            0x8000000000000000, 0xa8b8b452291fe800, 0x8ac7230489e80000, 0x4d28cb56c33fa400, //  8 ~ 11
+            0x1eca170c00000000, 0x780c7372621bd800, 0x1e39a5057d810000, 0x5b27ac993df97800, // 11 ~ 15
+            0x0000000000000000, 0x27b95e997e21da00, 0x5da0e1e53c5c8000, 0xd2ae3299c1c4b000, // 16 ~ 19
+            0x16bcc41e90000000, 0x2d04b7fdd9c0f000, 0x5658597bcaa24000, 0xa0e2073737609000, // 20 ~ 23
+            0x0c29e98000000000, 0x14adf4b732033500, 0x226ed36478bfa000, 0x383d9170b85ff800, // 24 ~ 27
+            0x5a3c23e39c000000, 0x8e65137388122800, 0xdd41bb36d259e000, 0x0aee5720ee830680, // 28 ~ 31
+            0x1000000000000000, 0x172588ad4f5f0a00, 0x211e44f7d02c1000, 0x2ee56725f06e5c00, // 32 ~ 35
+            0x41c21cb8e1000000                                                              // 36
+        ][radix]
         let nlen = base.description.count - 1
         // print("base=",base)
         var qr = (quotient: self, remainder: UInt2X(0))
