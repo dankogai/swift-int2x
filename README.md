@@ -77,7 +77,7 @@ Add the following to the `dependencies` section:
 
 ```swift
 .package(
-  url: "https://github.com/dankogai/swift-complex.git", from: "0.0.1"
+  url: "https://github.com/dankogai/swift-int2x.git", from: "0.0.1"
 )
 ```
 
