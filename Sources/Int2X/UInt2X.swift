@@ -701,5 +701,3 @@ public typealias UInt128    = UInt2X<UInt64>
 public typealias UInt256    = UInt2X<UInt128>
 public typealias UInt512    = UInt2X<UInt256>
 public typealias UInt1024   = UInt2X<UInt512>
-
-
