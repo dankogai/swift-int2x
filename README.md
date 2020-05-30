@@ -1,4 +1,4 @@
-[![Swift 4.2](https://img.shields.io/badge/swift-4.2-brightgreen.svg)](https://swift.org)
+[![Swift 5](https://img.shields.io/badge/swift-5-brightgreen.svg)](https://swift.org)
 [![MIT LiCENSE](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![build status](https://secure.travis-ci.org/dankogai/swift-int2x.png)](http://travis-ci.org/dankogai/swift-int2x)
 
@@ -99,4 +99,4 @@ in your code.  Enjoy!
 
 # Prerequisite
 
-Swift 4.2 or better, OS X or Linux to build.
+Swift 5 or better, OS X or Linux to build.

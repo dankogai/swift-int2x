@@ -52,9 +52,9 @@ final class Int2XTests: XCTestCase {
                 var y = x
                 for i in 0 ..< (T.bitWidth-1) {
                     // print("\(T.self)(\(x)) << \(i) == \(y)")
-                    XCTAssertEqual(x << i, y, "\(i, x, y)")
+                    XCTAssertEqual(x << i, y, "\((i, x, y))")
                     // print("\(T.self)(\(y)) >> \(i) == \(x)")
-                    XCTAssertEqual(y >> i, x, "\(i, x, y)")
+                    XCTAssertEqual(y >> i, x, "\((i, x, y))")
                     y *= 2
                 }
                 XCTAssertEqual(y >> T.bitWidth, T.init(-1))
