@@ -1,6 +1,6 @@
 [![Swift 5](https://img.shields.io/badge/swift-5-brightgreen.svg)](https://swift.org)
 [![MIT LiCENSE](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
-[![build status](https://secure.travis-ci.org/dankogai/swift-int2x.png)](http://travis-ci.org/dankogai/swift-int2x)
+[![build status](https://app.travis-ci.com/dankogai/swift-int2x.svg)](https://app.travis-ci.com/github/dankogai/swift-int2x)
 
 # swift-int2x
 
