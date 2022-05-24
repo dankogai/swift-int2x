@@ -59,7 +59,7 @@ $ scripts/run-repl.sh
 or
 
 ```sh
-$ swift build && swift -I.build/debug -L.build/debug -lInt2X
+$ swift run --repl
 ```
 
 and in your repl,
@@ -77,7 +77,7 @@ Add the following to the `dependencies` section:
 
 ```swift
 .package(
-  url: "https://github.com/dankogai/swift-int2x.git", from: "0.0.1"
+  url: "https://github.com/dankogai/swift-int2x.git", .branch("main")
 )
 ```
 
