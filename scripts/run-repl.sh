@@ -1,4 +1,2 @@
 #!/bin/bash
-bd=".build/release"
-swift build -c release -Xswiftc -enable-testing \
-    && swift ${inc} -I${bd} -L${bd} -lInt2X
+swift run --repl -c release -Xswiftc -enable-testing
