@@ -725,7 +725,9 @@ extension UInt2X: FixedWidthInteger {
 // UnsignedInteger
 extension UInt2X: UnsignedInteger {}
 
+#if swift(<6.0) // Swift 6.0 started supportings UInt128 natively
 public typealias UInt128    = UInt2X<UInt64>
+#endif
 public typealias UInt256    = UInt2X<UInt128>
 public typealias UInt512    = UInt2X<UInt256>
 public typealias UInt1024   = UInt2X<UInt512>

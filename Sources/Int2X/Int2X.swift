@@ -298,8 +298,9 @@ extension Int2X: FixedWidthInteger {
 // SignedInteger
 extension Int2X: SignedInteger {}
 
+#if swift(<6.0) // Swift 6.0 started supportings Int128 natively
 public typealias Int128    = Int2X<UInt64>
+#endif
 public typealias Int256    = Int2X<UInt128>
 public typealias Int512    = Int2X<UInt256>
 public typealias Int1024   = Int2X<UInt512>
-

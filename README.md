@@ -1,4 +1,5 @@
 [![Swift 5](https://img.shields.io/badge/swift-5-brightgreen.svg)](https://swift.org)
+[![Swift 5](https://img.shields.io/badge/swift-6-brightgreen.svg)](https://swift.org)
 [![MIT LiCENSE](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![CI via GitHub Actions](https://github.com/dankogai/swift-int2x/actions/workflows/swift.yml/badge.svg)](https://github.com/dankogai/swift-int2x/actions/workflows/swift.yml)
 
@@ -25,14 +26,18 @@ Thanks to [SE-0104], making your own integer types is easier than ever.  This mo
 U?Int{128,256,512,1024} are predefined as follows:
 
 ```swift
+#if swift(<6.0) // Swift 6.0 started supportings UInt128 natively
 public typealias UInt128    = UInt2X<UInt64>
+#endif
 public typealias UInt256    = UInt2X<UInt128>
 public typealias UInt512    = UInt2X<UInt256>
 public typealias UInt1024   = UInt2X<UInt512>
 ```
 
 ```swift
+#if swift(<6.0) // Swift 6.0 started supportings Int128 natively
 public typealias Int128    = Int2X<UInt64>
+#endif
 public typealias Int256    = Int2X<UInt128>
 public typealias Int512    = Int2X<UInt256>
 public typealias Int1024   = Int2X<UInt512>
