@@ -8,7 +8,7 @@ let ua = Int2XConfig.useAccelerate ? [false, true] : [false]
 
 for a in ua {
     if 1 < ua.count {
-        #if os(macOS) || os(iOS)
+        #if os(macOS)
         Int2XConfig.useAccelerate = a
         #endif
     }
@@ -18,7 +18,7 @@ for a in ua {
 
 for a in ua {
     if 1 < ua.count {
-        #if os(macOS) || os(iOS)
+        #if os(macOS)
         Int2XConfig.useAccelerate = a
         #endif
     }
@@ -28,7 +28,7 @@ for a in ua {
 
 for a in ua {
     if 1 < ua.count {
-        #if os(macOS) || os(iOS)
+        #if os(macOS)
         Int2XConfig.useAccelerate = a
         #endif
     }
