@@ -6,7 +6,7 @@ final class Int2XTests: XCTestCase {
         let ua = Int2XConfig.useAccelerate ? [false, true] : [false]
         for a in ua {
             if 1 < ua.count {
-                #if os(macOS) || os(iOS)
+                #if os(macOS)
                 Int2XConfig.useAccelerate = a
                 #endif
             }
@@ -42,7 +42,7 @@ final class Int2XTests: XCTestCase {
         let ua = Int2XConfig.useAccelerate ? [false, true] : [false]
         for a in ua {
             if 1 < ua.count {
-                #if os(macOS) || os(iOS)
+                #if os(macOS)
                 Int2XConfig.useAccelerate = a
                 #endif
             }

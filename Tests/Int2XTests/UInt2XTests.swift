@@ -11,7 +11,11 @@ final class UInt2XTests: XCTestCase {
     func runShift<Q:FixedWidthInteger>(forType T:Q.Type) {
         let ua = Int2XConfig.useAccelerate ? [false, true] : [false]
         for a in [false, true] {
-            if 1 < ua.count { Int2XConfig.useAccelerate = a }
+            if 1 < ua.count {
+                #if os(macOS)
+                Int2XConfig.useAccelerate = a
+                #endif
+            }
             print("\(T.self) bitshift tests (Int2XConfig.useAccelerate = \(Int2XConfig.useAccelerate))")
             XCTAssertEqual(T.init(1) << T.bitWidth, 0)
             var y = T.init(1)
